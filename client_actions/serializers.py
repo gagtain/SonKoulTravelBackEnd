@@ -1,5 +1,4 @@
-from rest_framework import serializers, status, request
-from rest_framework.response import Response
+from rest_framework import serializers
 
 from .models import (
     CommentText,
@@ -23,7 +22,7 @@ class CommentTextSerializer(serializers.ModelSerializer):
 class CommentStarSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommentStar
-        fields = 'name', 'stars'
+        fields = '__all__'
 
         read_only_fields = ('id',)
 

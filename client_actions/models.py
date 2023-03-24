@@ -20,19 +20,22 @@ choices = [
     (8, '8'),
     (9, '9'),
     (10, '10'),
+
 ]
+
+for i in range(1, 11):
+    choices.append((i, str(i)))
 
 
 class CommentStar(models.Model):
-    stars = models.IntegerField(default=0, choices=choices)
-    name = models.CharField(max_length=100)
+    stars = models.IntegerField(default=0, choices=choices, verbose_name="Оценка тура")
 
     def __str__(self):
-        return str(self.stars) + ' ' + str(self.name)
+        return str(self.stars)
 
     class Meta:
-        verbose_name_plural = 'Comment Stars'
-        verbose_name = 'Comment Star'
+        verbose_name_plural = 'Оценки туров'
+        verbose_name = 'Оценка туров'
 
 
 class CommentName(models.Model):
@@ -42,8 +45,7 @@ class CommentName(models.Model):
         return str(self.name)
 
     class Meta:
-        verbose_name_plural = 'Comment Names'
-        verbose_name = 'Comment Name'
+        verbose_name = 'Имя пользователя'
 
 
 class CommentText(models.Model):
@@ -53,8 +55,8 @@ class CommentText(models.Model):
         return str(self.text)
 
     class Meta:
-        verbose_name_plural = 'Comment Texts'
-        verbose_name = 'Comment Text'
+        verbose_name_plural = 'отзывы'
+        verbose_name = 'Отзыв'
 
 
 class CommentImage(models.Model):
@@ -64,39 +66,42 @@ class CommentImage(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = 'Comment Images'
-        verbose_name = 'Comment Image'
+        verbose_name_plural = 'Прикрепить изображения'
+        verbose_name = 'Прикрепить изображение'
 
         ordering = ['-image']
         unique_together = ['image']
 
 
 class CommentView(models.Model):
-    stars = models.ForeignKey(CommentStar, on_delete=models.CASCADE)
-    name = models.ForeignKey(CommentName, on_delete=models.CASCADE)
-    text = models.ForeignKey(CommentText, on_delete=models.CASCADE)
-    image = models.ForeignKey(CommentImage, on_delete=models.CASCADE, blank=True, null=True)
-    date = models.DateTimeField(auto_now_add=True)
+    stars = models.ForeignKey(CommentStar, on_delete=models.CASCADE, verbose_name="Оценка тура(1-10)")
+    name = models.ForeignKey(CommentName, on_delete=models.CASCADE, verbose_name="Имя пользователя")
+    text = models.ForeignKey(CommentText, on_delete=models.CASCADE, verbose_name="ваш отзыв")
+    image = models.ForeignKey(CommentImage,
+                              on_delete=models.CASCADE,
+                              blank=True, null=True,
+                              verbose_name="Изображение\n(необязательно)")
+    date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
 
     def __str__(self):
         return self.stars + self.name + self.text + self.image + str(self.date)
 
     class Meta:
-        verbose_name_plural = 'Comment Views'
-        verbose_name = 'Comment View'
+        verbose_name_plural = 'Комментарии'
+        verbose_name = 'Комментарий'
 
         ordering = ['-date']
         unique_together = ['name']
 
 
 class BlogPost(models.Model):
-    title = models.CharField(max_length=100)
-    text = models.TextField()
+    title = models.CharField(max_length=100, verbose_name="Заголовок")
+    text = models.TextField(verbose_name="Текст")
     image = WEBPField(
-        verbose_name='Image',
+        verbose_name='Прикрепить изображение',
         upload_to=image_folder,
     )
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
 
     def __str__(self):
         return self.title + str(self.date)
@@ -112,5 +117,3 @@ class FormQuestion(models.Model):
     question = models.CharField(max_length=100, verbose_name="ваш вопрос")
     contact = models.CharField(max_length=100, verbose_name="контакты")
     created = models.DateTimeField(auto_now_add=True)
-
-
