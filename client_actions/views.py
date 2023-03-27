@@ -125,8 +125,8 @@ class FormQuestionView(generics.CreateAPIView):
         self.perform_create(serializer)
 
         # Отправка данных в телеграмм
-        bot_token = '5964377497:AAEXxcJ745bQpNUpB2neHIjMMkf0IBF5mn4'
-        chat_id = '860389338'
+        bot_token = 'TOKEN_TELEBOT'
+        chat_id = 'YOUR_CHAT_ID'
         message = f'Name: {serializer.data["name"]}\nEmail: {serializer.data["email"]}\nMessage: {serializer.data["message"]}'
         url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
         requests.post(url)
