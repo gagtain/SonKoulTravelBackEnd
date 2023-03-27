@@ -1,5 +1,4 @@
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from .views import (
     CommentStarView,
     CommentNameView,
@@ -23,6 +22,7 @@ urlpatterns = [
     path('blog_post/', BlogPostView.as_view(), name='blog_post'),
     path('blog_post/<int:pk>/', BlogPostRetrieveUpdateDestroy.as_view(), name='blog_post'),
     path('form_question/', FormQuestionView.as_view(), name='form_question'),
+    path('form_question_email/', FormQuestionView.as_view(), name='form_question_email'),
     path('form_question/<int:pk>/', FormQuestionView.as_view(), name='form_questions'),
 
 ]

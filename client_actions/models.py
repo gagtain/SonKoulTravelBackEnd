@@ -1,7 +1,6 @@
 import uuid
 
 from django.db import models
-
 from client_actions.fields import WEBPField
 
 
@@ -114,6 +113,7 @@ class BlogPost(models.Model):
 
 
 class FormQuestion(models.Model):
-    question = models.CharField(max_length=100, verbose_name="ваш вопрос")
-    contact = models.CharField(max_length=100, verbose_name="контакты")
+    name = models.CharField(max_length=100, verbose_name="Ваше имя", null=True)
+    email = models.EmailField(max_length=100, verbose_name="Ваш email", blank=True, null=True)
+    message = models.TextField(verbose_name="вопрос", null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)

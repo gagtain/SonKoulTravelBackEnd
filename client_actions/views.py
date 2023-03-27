@@ -1,8 +1,11 @@
+import requests
+from rest_framework import generics, status
 from rest_framework.permissions import IsAdminUser, IsUserAuthor
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from rest_framework.generics import ListCreateAPIView
+
 
 from .models import (
     CommentView,
@@ -22,7 +25,6 @@ from .serializers import (
     BlogPostSerializer,
     FormQuestionSerializer
 )
-
 
 symbols = {
     '(': ')',
@@ -113,6 +115,22 @@ class BlogPostRetrieveUpdateDestroy(APIView):
         return Response(serializer.data)
 
 
-class FormQuestionView(ListCreateAPIView):
+class FormQuestionView(generics.CreateAPIView):
     queryset = FormQuestion.objects.all()
     serializer_class = FormQuestionSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        # Отправка данных в телеграмм
+        bot_token = '5964377497:AAEXxcJ745bQpNUpB2neHIjMMkf0IBF5mn4'
+        chat_id = '860389338'
+        message = f'Name: {serializer.data["name"]}\nEmail: {serializer.data["email"]}\nMessage: {serializer.data["message"]}'
+        url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
+        requests.post(url)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
