@@ -7,75 +7,81 @@ from .models import (
     CommentView,
     CommentImage,
     BlogPost,
-    FormQuestion
+    FormQuestion,
+    FormBooking,
 )
 
 
-class CommentTextSerializer(serializers.ModelSerializer):
+class BaseSerializer(serializers.ModelSerializer):
+    read_only_fields = ('id',)
+
+    def get_fields(self):
+        fields = super().get_fields()
+        if self.instance and self.context['request'].user.is_superuser:
+            return fields
+        return {
+            k: v for k, v in fields.items() if not getattr(v, 'write_only', False)
+        }
+
+
+class CommentTextSerializer(BaseSerializer):
     class Meta:
         model = CommentText
         fields = '__all__'
 
-        read_only_fields = ('id',)
 
-
-class CommentStarSerializer(serializers.ModelSerializer):
+class CommentStarSerializer(BaseSerializer):
     class Meta:
         model = CommentStar
         fields = '__all__'
 
-        read_only_fields = ('id',)
 
-
-class CommentNameSerializer(serializers.ModelSerializer):
+class CommentNameSerializer(BaseSerializer):
     class Meta:
         model = CommentName
         fields = '__all__'
 
-        read_only_fields = ('id',)
 
-
-class CommentImageSerializer(serializers.ModelSerializer):
+class CommentImageSerializer(BaseSerializer):
     class Meta:
         model = CommentImage
         fields = '__all__'
 
-        read_only_fields = ('id',)
 
-
-class CommentViewSerializer(serializers.ModelSerializer):
+class CommentViewSerializer(BaseSerializer):
     class Meta:
         model = CommentView
         fields = '__all__'
 
-        read_only_fields = ('id',)
 
-
-def is_admin(instance):
-    admin = instance.user.is_superuser
-    if admin:
-        return True
-
-
-class BlogPostSerializer(serializers.ModelSerializer):
+class BlogPostSerializer(BaseSerializer):
     date = serializers.DateTimeField(format='%H:%M:%S', allow_null=True, required=False)
+
 
     class Meta:
         model = BlogPost
         fields = 'title image text date'.split()
 
-        read_only_fields = ('id', 'date')
 
-
-class FormQuestionSerializer(serializers.ModelSerializer):
+class FormQuestionSerializer(BaseSerializer):
     created = serializers.DateTimeField(format='%H:%M:%S', allow_null=True, required=False)
 
     class Meta:
         model = FormQuestion
         fields = '__all__'
 
-        read_only_fields = ('id', 'created')
+        extra_kwargs = {
+            'created': {'read_only': True},
+        }
+
+
+class FormBookingSerializer(BaseSerializer):
+    date = serializers.DateTimeField(format='%H:%M:%S', allow_null=True)
+
+    class Meta:
+        model = FormBooking
+        fields = '__all__'
 
         extra_kwargs = {
-            'created': {'read_only': True}
+            'id': {'read_only': True},
         }

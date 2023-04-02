@@ -1,7 +1,19 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import CommentView
+from .models import (
+    CommentText,
+    CommentStar,
+    CommentName,
+    CommentView,
+    CommentImage,
+    BlogPost,
+    FormQuestion
+)
+
+admin.site.register(CommentView)
+admin.site.register(FormQuestion)
+admin.site.register(BlogPost)
 
 
 class CommentViewAdmin(admin.ModelAdmin):

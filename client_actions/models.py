@@ -113,7 +113,26 @@ class BlogPost(models.Model):
 
 
 class FormQuestion(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Ваше имя", null=True)
     email = models.EmailField(max_length=100, verbose_name="Ваш email", blank=True, null=True)
     message = models.TextField(verbose_name="вопрос", null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = 'Вопросы c формы главной страницы'
+        verbose_name = 'Вопрос'
+
+
+class FormBooking(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Имя")
+    email = models.EmailField(max_length=100, verbose_name="Ваш email", blank=True, null=True)
+    whatsapp = models.CharField(max_length=100, verbose_name="Whatsapp(необязательно)", blank=True, null=True)
+    date = models.DateTimeField(auto_now_add=False, verbose_name="Дата")
+
+    class Meta:
+        verbose_name_plural = 'Бронирование туров'
+        verbose_name = 'Бронирование тура'
+
+        ordering = ['-date']
+        unique_together = ['name', 'email']
+
+
