@@ -1,21 +1,19 @@
-import os
 import requests
-
-from rest_framework import mixins, viewsets, status
-from rest_framework.permissions import IsAdminUser
+from rest_framework import generics, status
+from rest_framework.permissions import IsAdminUser, IsUserAuthor
 from rest_framework.response import Response
-from rest_framework.decorators import action
-from rest_framework.exceptions import APIException
+from rest_framework.views import APIView
+from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from rest_framework.generics import ListCreateAPIView
+
 
 from .models import (
     CommentView,
     CommentName,
-    CommentStar,
-    CommentText,
+    CommentStar, CommentText,
     CommentImage,
     BlogPost,
-    FormQuestion,
-    FormBooking
+    FormQuestion
 )
 
 from .serializers import (
@@ -25,80 +23,114 @@ from .serializers import (
     CommentTextSerializer,
     CommentImageSerializer,
     BlogPostSerializer,
-    FormQuestionSerializer,
-    FormBookingSerializer
+    FormQuestionSerializer
 )
 
-
-class TelegramMixin:
-    def send_telegram_message(self, message):
-        bot_token = os.getenv('5964377497:AAEXxcJ745bQpNUpB2neHIjMMkf0IBF5mn4')
-        chat_id = os.getenv('860389338')
-        url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
-        try:
-            response = requests.post(url)
-            response.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            raise APIException('Error while sending Telegram message') from e
+symbols = {
+    '(': ')',
+    '[': ']',
+    '{': '}',
+    '<': '>'
+}
 
 
-class CommentNameViewSet(viewsets.ModelViewSet):
+class CommentNameView(ListCreateAPIView):
     queryset = CommentName.objects.all()
     serializer_class = CommentNameSerializer
 
 
-class CommentViewViewSet(viewsets.ModelViewSet):
+class CommentViewList(APIView):
+    queryset = CommentView.objects.all()
+    serializer_class = CommentViewSerializer
+
+    def post(self, request):
+        serializer = CommentViewSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=HTTP_201_CREATED)
+
+
+class CommentViewRetrieveUpdateDestroy(APIView):
     queryset = CommentView.objects.all()
     serializer_class = CommentViewSerializer
     permission_classes = [IsAdminUser]
 
+    def put(self, request, pk):
+        serializer = CommentViewSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=HTTP_201_CREATED)
 
-class CommentStarViewSet(viewsets.ModelViewSet):
+    def delete(self, request, pk):
+        post = CommentView.objects.get(pk=pk)
+        post.delete()
+        return Response(status=HTTP_204_NO_CONTENT)
+
+    def get(self, request, pk):
+        post = CommentView.objects.get(pk=pk)
+        serializer = CommentViewSerializer(post)
+        return Response(serializer.data)
+
+
+class CommentStarView(ListCreateAPIView):
     queryset = CommentStar.objects.all()
     serializer_class = CommentStarSerializer
 
 
-class CommentImageViewSet(viewsets.ModelViewSet):
+class CommentImageView(ListCreateAPIView):
     queryset = CommentImage.objects.all()
     serializer_class = CommentImageSerializer
 
 
-class CommentTextViewSet(viewsets.ModelViewSet):
+class CommentTextView(ListCreateAPIView):
     queryset = CommentText.objects.all()
     serializer_class = CommentTextSerializer
 
 
-class BlogPostViewSet(viewsets.ModelViewSet):
+class BlogPostView(ListCreateAPIView):
     queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
     permission_classes = [IsAdminUser]
 
 
-class FormQuestionViewSet(TelegramMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+class BlogPostRetrieveUpdateDestroy(APIView):
+    queryset = BlogPost.objects.all()
+    serializer_class = BlogPostSerializer
+    permission_classes = [IsAdminUser]
+
+    def put(self, request, pk):
+        serializer = BlogPostSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=HTTP_201_CREATED)
+
+    def delete(self, request, pk):
+        post = BlogPost.objects.get(pk=pk)
+        post.delete()
+        return Response(status=HTTP_204_NO_CONTENT)
+
+    def get(self, request, pk):
+        post = BlogPost.objects.get(pk=pk)
+        serializer = BlogPostSerializer(post)
+        return Response(serializer.data)
+
+
+class FormQuestionView(generics.CreateAPIView):
     queryset = FormQuestion.objects.all()
     serializer_class = FormQuestionSerializer
 
-    def perform_create(self, serializer):
-        try:
-            super().perform_create(serializer)
-            message = f'Форма Главной страницы \nEmail: {serializer.data["email"]}\nMessage: {serializer.data["message"]}'
-            self.send_telegram_message(message)
-        except APIException:
-            return Response({'error': 'Error while sending Telegram message'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
 
+        # Отправка данных в телеграмм
+        bot_token = '5964377497:AAEXxcJ745bQpNUpB2neHIjMMkf0IBF5mn4'
+        chat_id = '860389338'
+        message = f'Name: {serializer.data["name"]}\nEmail: {serializer.data["email"]}\nMessage: {serializer.data["message"]}'
+        url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
+        requests.post(url)
 
-class FormBookingViewSet(TelegramMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = FormBooking.objects.all()
-    serializer_class = FormBookingSerializer
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    def perform_create(self, serializer):
-        try:
-            super().perform_create(serializer)
-            message = f'Форма страницы тура \n' \
-                      f'Name: {serializer.data["name"]}\n' \
-                      f'Email: {serializer.data["email"]}\n' \
-                      f'WhatsApp: {serializer.data["whatsapp"]} \n ' \
-                      f'Дата: {serializer.data["date"]}'
-            self.send_telegram_message(message)
-        except APIException:
-            return Response({'error': 'Error while sending Telegram message'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
