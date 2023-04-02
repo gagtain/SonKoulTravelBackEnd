@@ -32,6 +32,7 @@ from .serializers import (
 
 class TelegramMixin:
     def send_telegram_message(self, message):
+        """GUYS HID TOKEN AND CHAT_ID YOUR BOT"""
         bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
         chat_id = os.getenv('TELEGRAM_CHAT_ID')
         url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
