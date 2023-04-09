@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator
 from rest_framework import serializers
 
 from .models import (
@@ -10,6 +11,7 @@ from .models import (
     FormQuestion,
     FormBooking,
 )
+from client_actions.fields import WEBPField
 
 
 class BaseSerializer(serializers.ModelSerializer):
@@ -56,7 +58,11 @@ class CommentViewSerializer(BaseSerializer):
 
 class BlogPostSerializer(BaseSerializer):
     date = serializers.DateTimeField(format='%H:%M:%S', allow_null=True, required=False)
-
+    image = serializers.ListField(
+        child=serializers.ImageField(),
+        required=False,
+        allow_empty=True,
+    )
 
     class Meta:
         model = BlogPost

@@ -60,8 +60,8 @@ class CommentText(models.Model):
 
 class CommentImage(models.Model):
     image = WEBPField(
-        verbose_name='Image',
-        upload_to=image_folder,
+        verbose_name='изображение',
+        upload_to=image_folder
     )
 
     class Meta:
