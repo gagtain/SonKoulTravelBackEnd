@@ -42,7 +42,7 @@ password:       <span class="hljs-comment">#third step (write password)</span>
 <h2 class="code-line" data-line-start=63 data-line-end=64 ><a id="Plugins_63"></a>Plugins</h2>
 <pre><code class="has-line-data" data-line-start="65" data-line-end="78" class="language-sh">
 
-Son-koul travel is currently extended with the following plugins.
+Son-koul travel is currently extended with the following plugins...
 Instructions on how to use them <span class="hljs-keyword">in</span> your own application are linked below.
 
 | Plugin | README |
