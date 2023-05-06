@@ -8,7 +8,6 @@ from .models import (
     CommentImage,
     BlogPost,
     FormQuestion,
-    FormBooking,
 )
 
 
@@ -57,7 +56,6 @@ class CommentViewSerializer(BaseSerializer):
 class BlogPostSerializer(BaseSerializer):
     date = serializers.DateTimeField(format='%H:%M:%S', allow_null=True, required=False)
 
-
     class Meta:
         model = BlogPost
         fields = 'title image text date'.split()
@@ -75,13 +73,3 @@ class FormQuestionSerializer(BaseSerializer):
         }
 
 
-class FormBookingSerializer(BaseSerializer):
-    date = serializers.DateTimeField(format='%H:%M:%S', allow_null=True)
-
-    class Meta:
-        model = FormBooking
-        fields = '__all__'
-
-        extra_kwargs = {
-            'id': {'read_only': True},
-        }

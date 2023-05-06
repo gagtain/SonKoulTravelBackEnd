@@ -15,7 +15,6 @@ from .models import (
     CommentImage,
     BlogPost,
     FormQuestion,
-    FormBooking
 )
 
 from .serializers import (
@@ -26,21 +25,7 @@ from .serializers import (
     CommentImageSerializer,
     BlogPostSerializer,
     FormQuestionSerializer,
-    FormBookingSerializer
 )
-
-
-class TelegramMixin:
-    def send_telegram_message(self, message):
-        """GUYS HID TOKEN AND CHAT_ID YOUR BOT"""
-        bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
-        chat_id = os.getenv('TELEGRAM_CHAT_ID')
-        url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
-        try:
-            response = requests.post(url)
-            response.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            raise APIException('Error while sending Telegram message') from e
 
 
 class CommentNameViewSet(viewsets.ModelViewSet):
@@ -52,6 +37,8 @@ class CommentViewViewSet(viewsets.ModelViewSet):
     queryset = CommentView.objects.all()
     serializer_class = CommentViewSerializer
     permission_classes = [IsAdminUser]
+    ordering = ['created_at']
+    ordering_fields = ['-created_at', 'rating']
 
 
 class CommentStarViewSet(viewsets.ModelViewSet):
@@ -62,6 +49,20 @@ class CommentStarViewSet(viewsets.ModelViewSet):
 class CommentImageViewSet(viewsets.ModelViewSet):
     queryset = CommentImage.objects.all()
     serializer_class = CommentImageSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = CommentImageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            responce_201 = {
+                "message": "Изображения успешно добавлены"
+            }
+            return Response(responce_201, status=status.HTTP_201_CREATED)
+        responce_400 = {
+            "message": "Ошибка при добавлении изображения или недопустимый формат изображения(Фотографии должны быть"
+                       " в формате JPG, PNG)"
+        }
+        return Response(responce_400, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CommentTextViewSet(viewsets.ModelViewSet):
@@ -75,31 +76,7 @@ class BlogPostViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
 
 
-class FormQuestionViewSet(TelegramMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+class FormQuestionViewSet(viewsets.GenericViewSet):
     queryset = FormQuestion.objects.all()
     serializer_class = FormQuestionSerializer
 
-    def perform_create(self, serializer):
-        try:
-            super().perform_create(serializer)
-            message = f'Форма Главной страницы \nEmail: {serializer.data["email"]}\nMessage: {serializer.data["message"]}'
-            self.send_telegram_message(message)
-        except APIException:
-            return Response({'error': 'Error while sending Telegram message'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class FormBookingViewSet(TelegramMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = FormBooking.objects.all()
-    serializer_class = FormBookingSerializer
-
-    def perform_create(self, serializer):
-        try:
-            super().perform_create(serializer)
-            message = f'Форма страницы тура \n' \
-                      f'Name: {serializer.data["name"]}\n' \
-                      f'Email: {serializer.data["email"]}\n' \
-                      f'WhatsApp: {serializer.data["whatsapp"]} \n ' \
-                      f'Дата: {serializer.data["date"]}'
-            self.send_telegram_message(message)
-        except APIException:
-            return Response({'error': 'Error while sending Telegram message'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

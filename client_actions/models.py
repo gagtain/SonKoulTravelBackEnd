@@ -1,11 +1,7 @@
-import uuid
-
 from django.db import models
-from client_actions.fields import WEBPField
 
 
-def image_folder(instance, filename):
-    return 'photos/{}.webp'.format(uuid.uuid4().hex)
+
 
 
 choices = [
@@ -59,10 +55,10 @@ class CommentText(models.Model):
 
 
 class CommentImage(models.Model):
-    image = WEBPField(
-        verbose_name='Image',
-        upload_to=image_folder,
-    )
+    image = models.ImageField(upload_to="static/images", verbose_name="Изображение")
+    image_two = models.ImageField(upload_to="static/images", verbose_name="Изображение 2")
+    image_three = models.ImageField(upload_to="static/images", verbose_name="Изображение 3")
+    image_four = models.ImageField(upload_to="static/images", verbose_name="Изображение 4")
 
     class Meta:
         verbose_name_plural = 'Прикрепить изображения'
@@ -77,9 +73,19 @@ class CommentView(models.Model):
     name = models.ForeignKey(CommentName, on_delete=models.CASCADE, verbose_name="Имя пользователя")
     text = models.ForeignKey(CommentText, on_delete=models.CASCADE, verbose_name="ваш отзыв")
     image = models.ForeignKey(CommentImage,
+                              related_name="Изображение",
                               on_delete=models.CASCADE,
-                              blank=True, null=True,
-                              verbose_name="Изображение\n(необязательно)")
+                              blank=False, null=False,
+                              verbose_name="Изображение")
+    image_two = models.ForeignKey(CommentImage, on_delete=models.CASCADE, verbose_name="Изображение 2(необязательно)", \
+                                  related_name="image_two_related",
+                                  blank=True, null=True)
+    image_three = models.ForeignKey(CommentImage, on_delete=models.CASCADE, verbose_name="Изображение 3(необязательно)",
+                                    related_name="image_three_related",
+                                    blank=True, null=True)
+    image_four = models.ForeignKey(CommentImage, on_delete=models.CASCADE, verbose_name="Изображение 4(необязательно)",
+                                   related_name="image_four_related",
+                                   blank=True, null=True)
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
 
     def __str__(self):
@@ -96,9 +102,9 @@ class CommentView(models.Model):
 class BlogPost(models.Model):
     title = models.CharField(max_length=100, verbose_name="Заголовок")
     text = models.TextField(verbose_name="Текст")
-    image = WEBPField(
+    image = models.ImageField(
         verbose_name='Прикрепить изображение',
-        upload_to=image_folder,
+        upload_to="static/images_blog",
     )
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
 
@@ -120,19 +126,3 @@ class FormQuestion(models.Model):
     class Meta:
         verbose_name_plural = 'Вопросы c формы главной страницы'
         verbose_name = 'Вопрос'
-
-
-class FormBooking(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Имя")
-    email = models.EmailField(max_length=100, verbose_name="Ваш email", blank=True, null=True)
-    whatsapp = models.CharField(max_length=100, verbose_name="Whatsapp(необязательно)", blank=True, null=True)
-    date = models.DateTimeField(auto_now_add=False, verbose_name="Дата")
-
-    class Meta:
-        verbose_name_plural = 'Бронирование туров'
-        verbose_name = 'Бронирование тура'
-
-        ordering = ['-date']
-        unique_together = ['name', 'email']
-
-

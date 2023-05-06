@@ -8,7 +8,6 @@ from .views import (
     CommentTextViewSet,
     BlogPostViewSet,
     FormQuestionViewSet,
-    FormBookingViewSet,
 )
 
 router = routers.DefaultRouter()
@@ -19,7 +18,6 @@ router.register(r'image', CommentImageViewSet)
 router.register(r'text', CommentTextViewSet)
 router.register(r'blog_post', BlogPostViewSet)
 router.register(r'form_question', FormQuestionViewSet)
-router.register(r'form_booking', FormBookingViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
