@@ -7,3 +7,6 @@ sqlparse==0.4.3
 tzdata==2022.7
 Pillow~=9.4.0
 twilio~=7.17.0
+requests~=2.30.0
+telegram~=0.0.1
+django-filter~=23.2

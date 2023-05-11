@@ -7,13 +7,9 @@ from .models import (
     CommentName,
     CommentView,
     CommentImage,
-    BlogPost,
-    FormQuestion
 )
 
 admin.site.register(CommentView)
-admin.site.register(FormQuestion)
-admin.site.register(BlogPost)
 
 
 class CommentViewAdmin(admin.ModelAdmin):

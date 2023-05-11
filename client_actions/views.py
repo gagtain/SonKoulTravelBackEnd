@@ -1,11 +1,7 @@
-import os
-import requests
-
-from rest_framework import mixins, viewsets, status
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.decorators import action
-from rest_framework.exceptions import APIException
+from rest_framework.pagination import PageNumberPagination
 
 from .models import (
     CommentView,
@@ -13,7 +9,6 @@ from .models import (
     CommentStar,
     CommentText,
     CommentImage,
-    BlogPost,
     FormQuestion,
 )
 
@@ -23,7 +18,6 @@ from .serializers import (
     CommentStarSerializer,
     CommentTextSerializer,
     CommentImageSerializer,
-    BlogPostSerializer,
     FormQuestionSerializer,
 )
 
@@ -33,10 +27,17 @@ class CommentNameViewSet(viewsets.ModelViewSet):
     serializer_class = CommentNameSerializer
 
 
+class MyPagination(PageNumberPagination):
+    page_size = 6  # Количество элементов на одной странице
+    page_query_param = 'page'  # Название параметра запроса, содержащего номер страницы
+    page_size_query_param = 'page_size'  # Название параметра запроса, содержащего количество элементов на странице
+
+
 class CommentViewViewSet(viewsets.ModelViewSet):
     queryset = CommentView.objects.all()
     serializer_class = CommentViewSerializer
     permission_classes = [IsAdminUser]
+    pagination_class = MyPagination
     ordering = ['created_at']
     ordering_fields = ['-created_at', 'rating']
 
@@ -70,13 +71,6 @@ class CommentTextViewSet(viewsets.ModelViewSet):
     serializer_class = CommentTextSerializer
 
 
-class BlogPostViewSet(viewsets.ModelViewSet):
-    queryset = BlogPost.objects.all()
-    serializer_class = BlogPostSerializer
-    permission_classes = [IsAdminUser]
-
-
 class FormQuestionViewSet(viewsets.GenericViewSet):
     queryset = FormQuestion.objects.all()
     serializer_class = FormQuestionSerializer
-

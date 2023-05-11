@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'client_actions',
     'tour',
+    'blog_and_news',
     'rest_framework',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

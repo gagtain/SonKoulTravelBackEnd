@@ -6,7 +6,6 @@ from .views import (
     CommentStarViewSet,
     CommentImageViewSet,
     CommentTextViewSet,
-    BlogPostViewSet,
     FormQuestionViewSet,
 )
 
@@ -16,7 +15,6 @@ router.register(r'view', CommentViewViewSet)
 router.register(r'star', CommentStarViewSet)
 router.register(r'image', CommentImageViewSet)
 router.register(r'text', CommentTextViewSet)
-router.register(r'blog_post', BlogPostViewSet)
 router.register(r'form_question', FormQuestionViewSet)
 
 urlpatterns = [

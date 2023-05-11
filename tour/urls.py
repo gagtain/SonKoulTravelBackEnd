@@ -5,7 +5,10 @@ from .views import (
     TourProgramViewSet,
     PriceViewSet,
     TipsViewSet,
-    PhotoViewSet
+    PhotoViewSet,
+    TourDateViewSet,
+    BookingGroupTourViewSet,
+    BookingPrivateTourViewSet
 )
 
 router = routers.DefaultRouter()
@@ -14,6 +17,9 @@ router.register(r'TourProgram', TourProgramViewSet)
 router.register(r'Price', PriceViewSet)
 router.register(r'Tips', TipsViewSet)
 router.register(r'Photo', PhotoViewSet)
+router.register(r'TourDate', TourDateViewSet)
+router.register(r'BookingGroupTour', BookingGroupTourViewSet)
+router.register(r'BookingPrivateTour', BookingPrivateTourViewSet)
 
 
 urlpatterns = [

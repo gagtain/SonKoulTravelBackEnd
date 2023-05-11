@@ -37,6 +37,11 @@ class TourProgram(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name_plural = "Программы туров"
+        verbose_name = "Программа тура"
+        ordering = ['-how_day']
+
 
 class Price(models.Model):
     price_includes = models.CharField(max_length=100)
@@ -66,43 +71,91 @@ class Price(models.Model):
     def __str__(self):
         return self.price_includes
 
+    class Meta:
+        verbose_name_plural = "Что входит в стоимость и не входит в стоимость"
+        verbose_name = "Что входит в стоимость и не входит в стоимость"
+
 
 class Tips(models.Model):
-    tittle = models.CharField(max_length=100)
-    what_to_bring = models.CharField(max_length=100)
-    what_to_bring_2 = models.CharField(max_length=100, blank=True, null=True)
-    what_to_bring_3 = models.CharField(max_length=100, blank=True, null=True)
-    what_to_bring_4 = models.CharField(max_length=100, blank=True, null=True)
-    what_to_bring_5 = models.CharField(max_length=100, blank=True, null=True)
-    what_to_bring_6 = models.CharField(max_length=100, blank=True, null=True)
-    what_to_bring_7 = models.CharField(max_length=100, blank=True, null=True)
-    what_to_bring_8 = models.CharField(max_length=100, blank=True, null=True)
-    what_to_bring_9 = models.CharField(max_length=100, blank=True, null=True)
-    what_to_bring_10 = models.CharField(max_length=100, blank=True, null=True)
-    what_to_bring_11 = models.CharField(max_length=100, blank=True, null=True)
-    what_to_bring_12 = models.CharField(max_length=100, blank=True, null=True)
-    what_to_bring_13 = models.CharField(max_length=100, blank=True, null=True)
-    what_to_bring_14 = models.CharField(max_length=100, blank=True, null=True)
-    what_to_bring_15 = models.CharField(max_length=100, blank=True, null=True)
-    tittle_2 = models.CharField(max_length=100, blank=True, null=True)
-    description = models.TextField()
+    tittle = models.CharField(max_length=100, verbose_name="Заголовок")
+    what_to_bring = models.CharField(max_length=100, verbose_name="Список")
+    what_to_bring_2 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    what_to_bring_3 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    what_to_bring_4 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    what_to_bring_5 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    what_to_bring_6 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    what_to_bring_7 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    what_to_bring_8 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    what_to_bring_9 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    what_to_bring_10 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    what_to_bring_11 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    what_to_bring_12 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    what_to_bring_13 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    what_to_bring_14 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    what_to_bring_15 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
+    tittle_2 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Заголовок 2")
+    description = models.TextField(verbose_name="Описание")
 
     def __str__(self):
         return self.tittle
 
+    class Meta:
+        verbose_name_plural = "Советы"
+        verbose_name = "Совет"
+
 
 class Photo(models.Model):
-    image = models.ImageField(upload_to='media/static/images/tour_images/Photo')
-    image_2 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True)
-    image_3 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True)
-    image_4 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True)
-    image_5 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True)
-    image_6 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True)
-    image_7 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True)
-    image_8 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True)
-    image_9 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True)
-    image_10 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True)
-
+    image = models.ImageField(upload_to='media/static/images/tour_images/Photo', verbose_name="Добавить фото(обязательно)")
+    image_2 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
+    image_3 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
+    image_4 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
+    image_5 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
+    image_6 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
+    image_7 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
+    image_8 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
+    image_9 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
+    image_10 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
 
     def __str__(self):
         return self.image
+
+    class Meta:
+        verbose_name = "Добавить фото"
+        verbose_name_plural = "Добавить фото"
+
+
+class TourDates(models.Model):
+    date = models.CharField(max_length=100, verbose_name="Добавить дату тура")
+
+    def __str__(self) -> str:
+        return f"{self.date}"
+
+    class Meta:
+        verbose_name = "Добавить дату тура"
+        verbose_name_plural = "Добавить дату тура"
+
+
+class BookingGroupTour(models.Model):
+    name = models.CharField(max_length=100)
+    email_or_whatsapp = models.CharField(max_length=100)
+    date = models.ForeignKey(TourDates, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        verbose_name = "Бронирование группового тура"
+        verbose_name_plural = "Бронирование групповых туров"
+
+
+class BookingPrivateTour(models.Model):
+    name = models.CharField(max_length=100)
+    email_or_whatsapp = models.CharField(max_length=100)
+    date = models.ForeignKey(TourDates, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Бронирование приватного тура"
+        verbose_name_plural = "Бронирование приватных туров"

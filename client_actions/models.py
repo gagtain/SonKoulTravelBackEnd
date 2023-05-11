@@ -1,9 +1,5 @@
 from django.db import models
 
-
-
-
-
 choices = [
     (1, '1'),
     (2, '2'),
@@ -97,25 +93,6 @@ class CommentView(models.Model):
 
         ordering = ['-date']
         unique_together = ['name']
-
-
-class BlogPost(models.Model):
-    title = models.CharField(max_length=100, verbose_name="Заголовок")
-    text = models.TextField(verbose_name="Текст")
-    image = models.ImageField(
-        verbose_name='Прикрепить изображение',
-        upload_to="static/images_blog",
-    )
-    date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
-
-    def __str__(self):
-        return self.title + str(self.date)
-
-    class Meta:
-        verbose_name = 'Опубликовать пост'
-        verbose_name_plural = 'Опубликовать посты'
-
-        unique_together = ['id']
 
 
 class FormQuestion(models.Model):

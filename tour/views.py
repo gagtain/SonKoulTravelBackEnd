@@ -1,20 +1,70 @@
-import os
 import requests
-
-from rest_framework import mixins, viewsets, status
+from django.db.migrations import serializer
+from rest_framework import viewsets, status
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.decorators import action
-from rest_framework.exceptions import APIException
+import telegram
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
-from .serializers import TourAddSerializer, TourProgramSerializer, PriceSerializer, TipsSerializer, PhotoSerializer
-from .models import TourAdd, TourProgram, Price, Tips, Photo
+from .serializers import (
+    TourAddSerializer,
+    TourProgramSerializer,
+    PriceSerializer,
+    TipsSerializer,
+    PhotoSerializer,
+    BookingPrivateTourSerializer,
+    BookingGroupTourSerializer,
+    TourDatesSerializer
+)
+from .models import (
+    TourAdd,
+    TourProgram,
+    Price,
+    Tips,
+    Photo,
+    TourDates,
+    BookingGroupTour,
+    BookingPrivateTour
+)
+from .filters import TourAddFilter
+
+
+class TelegramSendMessage(viewsets.ModelViewSet):
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+
+            # Отправка данных в телеграмм
+            bot_token = '5964377497:AAEXxcJ745bQpNUpB2neHIjMMkf0IBF5mn4'
+            chat_id = '860389338'
+            message = f'Name: {serializer.data["name"]}\nEmail: {serializer.data["email_or_whatsapp"]}\nDate: {str(serializer.data["date"])}'
+            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
+            requests.post(url)
+
+            headers = self.get_success_headers(serializer.data)
+            responce_201 = {
+                "message": "Your request has been successfully submitted!  Manager will contact you soon.",
+            }
+            return Response(responce_201, status=status.HTTP_201_CREATED, headers=headers)
+        except Exception:
+            responce_400 = {
+                "message": "Your request has not been successfully submitted!  Please try again later."
+            }
+
+            return Response(responce_400, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TourAddViewSet(viewsets.ModelViewSet):
     queryset = TourAdd.objects.all()
     serializer_class = TourAddSerializer
     permission_classes = [IsAdminUser]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TourAddFilter
 
     def create(self, request):
         serializer = TourAddSerializer(data=request.data)
@@ -155,7 +205,6 @@ class PriceViewSet(viewsets.ModelViewSet):
             }
             return Response(responce_404, status=status.HTTP_404_NOT_FOUND)
 
-
     def destroy(self, request, pk=None):
         try:
             price = Price.objects.get(pk=pk)
@@ -189,7 +238,6 @@ class TipsViewSet(viewsets.ModelViewSet):
         }
         return Response(response_400, status=status.HTTP_400_BAD_REQUEST)
 
-
     def update(self, request, pk=None):
         try:
             tips = Tips.objects.get(pk=pk)
@@ -209,7 +257,6 @@ class TipsViewSet(viewsets.ModelViewSet):
                 "message": "Tips not found",
             }
             return Response(responce_404, status=status.HTTP_404_NOT_FOUND)
-
 
     def destroy(self, request, pk=None):
         try:
@@ -279,4 +326,17 @@ class PhotoViewSet(viewsets.ModelViewSet):
             return Response(responce_404, status=status.HTTP_404_NOT_FOUND)
 
 
+class TourDateViewSet(viewsets.ModelViewSet):
+    queryset = TourDates.objects.all()
+    serializer_class = TourDatesSerializer
 
+
+# -*- coding: utf-8 -*-
+class BookingPrivateTourViewSet(TelegramSendMessage):
+    queryset = BookingPrivateTour.objects.all()
+    serializer_class = BookingPrivateTourSerializer
+
+
+class BookingGroupTourViewSet(TelegramSendMessage):
+    queryset = BookingGroupTour.objects.all()
+    serializer_class = BookingGroupTourSerializer

@@ -6,7 +6,6 @@ from .models import (
     CommentName,
     CommentView,
     CommentImage,
-    BlogPost,
     FormQuestion,
 )
 
@@ -51,14 +50,6 @@ class CommentViewSerializer(BaseSerializer):
     class Meta:
         model = CommentView
         fields = '__all__'
-
-
-class BlogPostSerializer(BaseSerializer):
-    date = serializers.DateTimeField(format='%H:%M:%S', allow_null=True, required=False)
-
-    class Meta:
-        model = BlogPost
-        fields = 'title image text date'.split()
 
 
 class FormQuestionSerializer(BaseSerializer):
