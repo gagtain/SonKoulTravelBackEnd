@@ -40,8 +40,8 @@ class TelegramSendMessage(viewsets.ModelViewSet):
             self.perform_create(serializer)
 
             # Отправка данных в телеграмм
-            bot_token = '5964377497:AAEXxcJ745bQpNUpB2neHIjMMkf0IBF5mn4'
-            chat_id = '860389338'
+            bot_token = 'BOT TOKEN'
+            chat_id = 'CHAT ID'
             message = f'Name: {serializer.data["name"]}\nEmail: {serializer.data["email_or_whatsapp"]}\nDate: {str(serializer.data["date"])}'
             url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
             requests.post(url)
