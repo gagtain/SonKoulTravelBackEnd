@@ -29,14 +29,69 @@ class TourProgramSerializer(serializers.ModelSerializer):
 class PriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Price
-        fields = '__all__'
+        fields = (
+            'id',
+            'price_includes',
+            'price_includes_2',
+            'price_includes_3',
+            'price_includes_4',
+            'price_includes_5',
+            'price_includes_6',
+            'price_includes_7',
+            'price_includes_8',
+            'price_includes_9',
+            'price_includes_10',
+            'price_not_includes',
+            'price_not_includes_2',
+            'price_not_includes_3',
+            'price_not_includes_4',
+            'price_not_includes_5',
+            'price_not_includes_6',
+            'price_not_includes_7',
+            'price_not_includes_8',
+            'price_not_includes_9',
+            'price_not_includes_10',
+        )
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        for key, value in data.items():
+            if not value:
+                data[key] = None
+        return data
 
 
 class TipsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tips
-        fields = '__all__'
+        fields = \
+            [
+    "tittle",
+    "what_to_bring",
+    "what_to_bring_2",
+    "what_to_bring_3",
+    "what_to_bring_4",
+    "what_to_bring_5",
+    "what_to_bring_6",
+    "what_to_bring_7",
+    "what_to_bring_8",
+    "what_to_bring_9",
+    "what_to_bring_10",
+    "what_to_bring_11",
+    "what_to_bring_12",
+    "what_to_bring_13",
+    "what_to_bring_14",
+    "what_to_bring_15",
+    "tittle_2" ,
+    "description"
+            ]
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        for key, value in data.items():
+            if not value:
+                data[key] = None
+        return data
 
 class PhotoSerializer(serializers.ModelSerializer):
     class Meta:

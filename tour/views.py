@@ -1,6 +1,6 @@
 import requests
 from django.db.migrations import serializer
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
@@ -59,10 +59,15 @@ class TelegramSendMessage(viewsets.ModelViewSet):
             return Response(responce_400, status=status.HTTP_400_BAD_REQUEST)
 
 
+class IsSuperuser(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_superuser
+
+
 class TourAddViewSet(viewsets.ModelViewSet):
     queryset = TourAdd.objects.all()
     serializer_class = TourAddSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsSuperuser | permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_class = TourAddFilter
 
@@ -117,7 +122,7 @@ class TourAddViewSet(viewsets.ModelViewSet):
 class TourProgramViewSet(viewsets.ModelViewSet):
     queryset = TourProgram.objects.all()
     serializer_class = TourProgramSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsSuperuser | permissions.IsAuthenticatedOrReadOnly]
 
     def create(self, request):
         serializer = TourProgramSerializer(data=request.data)
@@ -170,7 +175,7 @@ class TourProgramViewSet(viewsets.ModelViewSet):
 class PriceViewSet(viewsets.ModelViewSet):
     queryset = Price.objects.all()
     serializer_class = PriceSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsSuperuser | permissions.IsAuthenticatedOrReadOnly]
 
     def create(self, request):
         serializer = PriceSerializer(data=request.data)
@@ -223,7 +228,7 @@ class PriceViewSet(viewsets.ModelViewSet):
 class TipsViewSet(viewsets.ModelViewSet):
     queryset = Tips.objects.all()
     serializer_class = TipsSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsSuperuser | permissions.IsAuthenticatedOrReadOnly]
 
     def create(self, request):
         serializer = TipsSerializer(data=request.data)
@@ -276,7 +281,7 @@ class TipsViewSet(viewsets.ModelViewSet):
 class PhotoViewSet(viewsets.ModelViewSet):
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsSuperuser | permissions.IsAuthenticatedOrReadOnly]
 
     def create(self, request):
         serializer = PhotoSerializer(data=request.data)
@@ -329,6 +334,7 @@ class PhotoViewSet(viewsets.ModelViewSet):
 class TourDateViewSet(viewsets.ModelViewSet):
     queryset = TourDates.objects.all()
     serializer_class = TourDatesSerializer
+    permission_classes = [IsSuperuser | permissions.IsAuthenticatedOrReadOnly]
 
 
 # -*- coding: utf-8 -*-

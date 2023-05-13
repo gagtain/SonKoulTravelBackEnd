@@ -7,14 +7,14 @@ class TourAdd(models.Model):
     number_of_people = models.IntegerField()
     price = models.IntegerField()
     when_is_tour = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='media/static/images/tour_images')
-    image_2 = models.ImageField(upload_to='media/static/images/tour_images', blank=True, null=True)
-    image_3 = models.ImageField(upload_to='media/static/images/tour_images', blank=True, null=True)
-    image_4 = models.ImageField(upload_to='media/static/images/tour_images', blank=True, null=True)
-    image_5 = models.ImageField(upload_to='media/static/images/tour_images', blank=True, null=True)
-    image_6 = models.ImageField(upload_to='media/static/images/tour_images', blank=True, null=True)
+    image = models.ImageField(upload_to='tour_images')
+    image_2 = models.ImageField(upload_to='tour_images', blank=True, null=True)
+    image_3 = models.ImageField(upload_to='tour_images', blank=True, null=True)
+    image_4 = models.ImageField(upload_to='tour_images', blank=True, null=True)
+    image_5 = models.ImageField(upload_to='tour_images', blank=True, null=True)
+    image_6 = models.ImageField(upload_to='tour_images', blank=True, null=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     class Meta:

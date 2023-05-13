@@ -6,16 +6,16 @@ from .views import (
     CommentStarViewSet,
     CommentImageViewSet,
     CommentTextViewSet,
-    FormQuestionViewSet,
+    ChooseTourViewSet
 )
 
 router = routers.DefaultRouter()
 router.register(r'name', CommentNameViewSet)
 router.register(r'view', CommentViewViewSet)
 router.register(r'star', CommentStarViewSet)
+router.register(r'ChooseTour', ChooseTourViewSet)
 router.register(r'image', CommentImageViewSet)
 router.register(r'text', CommentTextViewSet)
-router.register(r'form_question', FormQuestionViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

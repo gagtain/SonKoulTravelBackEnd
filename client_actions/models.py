@@ -1,4 +1,7 @@
 from django.db import models
+from rest_framework.reverse import reverse
+
+from tour.models import TourAdd
 
 choices = [
     (1, '1'),
@@ -52,9 +55,9 @@ class CommentText(models.Model):
 
 class CommentImage(models.Model):
     image = models.ImageField(upload_to="static/images", verbose_name="Изображение")
-    image_two = models.ImageField(upload_to="static/images", verbose_name="Изображение 2")
-    image_three = models.ImageField(upload_to="static/images", verbose_name="Изображение 3")
-    image_four = models.ImageField(upload_to="static/images", verbose_name="Изображение 4")
+    image_two = models.ImageField(upload_to="static/images", verbose_name="Изображение 2", blank=True, null=True)
+    image_three = models.ImageField(upload_to="static/images", verbose_name="Изображение 3", blank=True, null=True)
+    image_four = models.ImageField(upload_to="static/images", verbose_name="Изображение 4", blank=True, null=True)
 
     class Meta:
         verbose_name_plural = 'Прикрепить изображения'
@@ -62,6 +65,19 @@ class CommentImage(models.Model):
 
         ordering = ['-image']
         unique_together = ['image']
+
+
+class ChooseTour(models.Model):
+    tour = models.OneToOneField(TourAdd, verbose_name="выбрать тур", on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = 'Выбрать тур'
+        verbose_name = 'Выбрать тур'
+        ordering = ['-tour']
+        unique_together = ['tour']
+
+    def __str__(self):
+        return self.tour.name
 
 
 class CommentView(models.Model):
@@ -82,24 +98,14 @@ class CommentView(models.Model):
     image_four = models.ForeignKey(CommentImage, on_delete=models.CASCADE, verbose_name="Изображение 4(необязательно)",
                                    related_name="image_four_related",
                                    blank=True, null=True)
+    tour = models.ForeignKey(ChooseTour, on_delete=models.CASCADE, verbose_name="выбрать тур")
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
 
-    def __str__(self):
-        return self.stars + self.name + self.text + self.image + str(self.date)
+    def __str__(self) -> str:
+        return self.stars + self.name + self.text + self.image + str(self.tour) + str(self.date)
 
     class Meta:
         verbose_name_plural = 'Комментарии'
         verbose_name = 'Комментарий'
 
         ordering = ['-date']
-        unique_together = ['name']
-
-
-class FormQuestion(models.Model):
-    email = models.EmailField(max_length=100, verbose_name="Ваш email", blank=True, null=True)
-    message = models.TextField(verbose_name="вопрос", null=True, blank=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name_plural = 'Вопросы c формы главной страницы'
-        verbose_name = 'Вопрос'

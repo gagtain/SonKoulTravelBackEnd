@@ -28,7 +28,14 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-# Application definition
+APPS = [
+    'client_actions',
+    'tour',
+    'main_page',
+    'blog_and_news',
+    'rest_framework',
+    'transport',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -37,12 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'client_actions',
-    'tour',
-    'blog_and_news',
-    'rest_framework',
     'django_filters',
-]
+    'ratelimit',
+]+APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

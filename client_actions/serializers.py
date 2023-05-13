@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
+from tour.models import TourAdd
 from .models import (
     CommentText,
     CommentStar,
     CommentName,
     CommentView,
-    CommentImage,
-    FormQuestion,
+    CommentImage, ChooseTour,
 )
 
 
@@ -46,21 +46,17 @@ class CommentImageSerializer(BaseSerializer):
         fields = '__all__'
 
 
+class ChooseTourSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ChooseTour
+        fields = '__all__'
+
+    def get_tour(self, obj):
+        return obj.tour.name
+
+
 class CommentViewSerializer(BaseSerializer):
     class Meta:
         model = CommentView
-        fields = '__all__'
-
-
-class FormQuestionSerializer(BaseSerializer):
-    created = serializers.DateTimeField(format='%H:%M:%S', allow_null=True, required=False)
-
-    class Meta:
-        model = FormQuestion
-        fields = '__all__'
-
-        extra_kwargs = {
-            'created': {'read_only': True},
-        }
-
-
+        fields = 'stars name text image image_two image_three image_four tour date'.split()
