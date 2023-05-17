@@ -1,6 +1,8 @@
+import re
 from datetime import datetime
 
 from rest_framework import serializers
+from rest_framework.response import Response
 
 from .models import (
     TourAdd,
@@ -10,7 +12,7 @@ from .models import (
     Photo,
     TourDates,
     BookingPrivateTour,
-    BookingGroupTour
+    BookingGroupTour, PriceDetails, TourDate,
 )
 
 
@@ -45,30 +47,52 @@ class PhotoSerializer(serializers.ModelSerializer):
 
 
 class TourDatesSerializer(serializers.ModelSerializer):
-    date = serializers.DateField(format="%d.%m.%y")
 
     class Meta:
         model = TourDates
-        fields = ('date',)
+        fields = '__all__'
 
 
 class BookingPrivateTourSerializer(serializers.ModelSerializer):
-    date = TourDatesSerializer(read_only=True)
 
     class Meta:
         model = BookingPrivateTour
-        fields = ('name', 'email_or_whatsapp', 'date')
+        fields = '__all__'
 
 
 class BookingGroupTourSerializer(serializers.ModelSerializer):
-    date = TourDatesSerializer(required=False)
+    date_str = serializers.SerializerMethodField(read_only=True, default='None')
+    # email_or_whatsapp = serializers.CharField()
 
     class Meta:
         model = BookingGroupTour
-        fields = ('name', 'email_or_whatsapp', 'date')
+        fields = 'id name email_or_whatsapp date date_str'.split()
 
-    def create(self, validated_data):
-        date = validated_data.pop('date', None)
-        if date is not None:
-            validated_data['date'] = date.date()
-        return super().create(validated_data)
+    def get_date_str(self, instance):
+        return str(instance.date)
+
+    # def validate_email_or_whatsapp(self, value):
+    #     if not value:
+    #         raise serializers.ValidationError("Поле name не может быть пустым")
+    #
+    #         # Проверяем, что значение содержит только буквы
+    #     if not re.match(r'^[a-zA-Z]+$', value):
+    #         raise serializers.ValidationError("Поле name должно содержать только буквы")
+    #
+    #     return value
+
+class PriceDetailsCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PriceDetails
+        fields = 'person per_person'.split()
+
+
+class PriceDetailsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PriceDetails
+        fields = '__all__'
+
+
+
+
