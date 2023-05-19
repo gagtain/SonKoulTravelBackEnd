@@ -1,7 +1,6 @@
 import requests
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from ratelimit.decorators import ratelimit
 from django.core.cache import caches  # Заменили get_cache на caches
 
 from .models import FormQuestion
@@ -12,7 +11,7 @@ class FormQuestionViewSet(viewsets.ModelViewSet):
     queryset = FormQuestion.objects.all()
     serializer_class = FormQuestionSerializer
 
-    @ratelimit( rate='4/m', method='POST', block=True)
+
     def create(self, request, *args, **kwargs):
         try:
             serializer = self.get_serializer(data=request.data)

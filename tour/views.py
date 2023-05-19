@@ -5,6 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 import telegram
+from ratelimit.decorators import ratelimit
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -32,6 +33,7 @@ from .models import (
 from .filters import TourAddFilter
 
 
+@ratelimit(rate='5/h', block=True)
 class TelegramSendMessage(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         try:
@@ -40,8 +42,8 @@ class TelegramSendMessage(viewsets.ModelViewSet):
             self.perform_create(serializer)
 
             # Отправка данных в телеграмм
-            bot_token = '5964377497:AAEXxcJ745bQpNUpB2neHIjMMkf0IBF5mn4'
-            chat_id = '860389338'
+            bot_token = 'BOT TOKEN'
+            chat_id = 'CHAT ID'
             message = f'Name: {serializer.data["name"]}\nEmail: {serializer.data["email_or_whatsapp"]}\nDate: {str(serializer.data["date"])}'
             url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
             requests.post(url)
@@ -338,11 +340,11 @@ class TourDateViewSet(viewsets.ModelViewSet):
 
 
 # -*- coding: utf-8 -*-
-class BookingPrivateTourViewSet(TelegramSendMessage):
+class BookingPrivateTourViewSet(viewsets.ModelViewSet):
     queryset = BookingPrivateTour.objects.all()
     serializer_class = BookingPrivateTourSerializer
 
 
-class BookingGroupTourViewSet(TelegramSendMessage):
+class BookingGroupTourViewSet(viewsets.ModelViewSet):
     queryset = BookingGroupTour.objects.all()
     serializer_class = BookingGroupTourSerializer

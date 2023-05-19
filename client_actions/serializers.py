@@ -13,14 +13,6 @@ from .models import (
 class BaseSerializer(serializers.ModelSerializer):
     read_only_fields = ('id',)
 
-    def get_fields(self):
-        fields = super().get_fields()
-        if self.instance and self.context['request'].user.is_superuser:
-            return fields
-        return {
-            k: v for k, v in fields.items() if not getattr(v, 'write_only', False)
-        }
-
 
 class CommentTextSerializer(BaseSerializer):
     class Meta:
@@ -59,4 +51,10 @@ class ChooseTourSerializer(serializers.ModelSerializer):
 class CommentViewSerializer(BaseSerializer):
     class Meta:
         model = CommentView
-        fields = 'stars name text image image_two image_three image_four tour date'.split()
+        fields = 'id stars name text image image_two image_three image_four tour date is_approved'.split()
+        read_only_fields = ('id',)
+
+        extra_kwargs = {
+            "tour": {"required": False},
+            "id": {"required": False},
+        }

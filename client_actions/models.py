@@ -1,3 +1,5 @@
+from typing import List
+
 from django.db import models
 from rest_framework.reverse import reverse
 
@@ -100,9 +102,11 @@ class CommentView(models.Model):
                                    blank=True, null=True)
     tour = models.ForeignKey(ChooseTour, on_delete=models.CASCADE, verbose_name="выбрать тур")
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
+    is_approved = models.BooleanField(default=False)
+    at_moderation = models.DateTimeField(blank=True, null=True, verbose_name="Дата публикации")
 
-    def __str__(self) -> str:
-        return self.stars + self.name + self.text + self.image + str(self.tour) + str(self.date)
+    def __str__(self):
+        return f"{self.stars} {self.name} {self.text} {self.image} {str(self.tour)} {str(self.date)}"
 
     class Meta:
         verbose_name_plural = 'Комментарии'
