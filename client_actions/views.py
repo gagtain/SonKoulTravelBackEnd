@@ -1,10 +1,10 @@
 import os
 import requests
 
-from rest_framework import mixins, viewsets, status, filters
+from rest_framework import mixins, viewsets, status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from django.http import JsonResponse
+from rest_framework.decorators import action
 from rest_framework.exceptions import APIException
 
 from .models import (
@@ -32,14 +32,14 @@ from .serializers import (
 
 class TelegramMixin:
     def send_telegram_message(self, message):
-        bot_token = os.getenv('6076036390:AAGAIxFT7aEsVKfWG8pXF8Llszj1osw_80w')
-        chat_id = os.getenv('860389338')
+        bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
+        chat_id = os.getenv('TELEGRAM_CHAT_ID')
         url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
         try:
             response = requests.post(url)
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            raise APIException('Непредвиденная ошибка, скоро мы это исправим') from e
+            raise APIException('Error while sending Telegram message') from e
 
 
 class CommentNameViewSet(viewsets.ModelViewSet):
@@ -84,8 +84,7 @@ class FormQuestionViewSet(TelegramMixin, mixins.CreateModelMixin, viewsets.Gener
             message = f'Форма Главной страницы \nEmail: {serializer.data["email"]}\nMessage: {serializer.data["message"]}'
             self.send_telegram_message(message)
         except APIException:
-            return JsonResponse({'error': 'Error while sending Telegram message'},
-                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'error': 'Error while sending Telegram message'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class FormBookingViewSet(TelegramMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -102,5 +101,4 @@ class FormBookingViewSet(TelegramMixin, mixins.CreateModelMixin, viewsets.Generi
                       f'Дата: {serializer.data["date"]}'
             self.send_telegram_message(message)
         except APIException:
-            return JsonResponse({'error': 'Error while sending Telegram message'},
-                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'error': 'Error while sending Telegram message'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
