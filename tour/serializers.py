@@ -68,24 +68,24 @@ class TipsSerializer(serializers.ModelSerializer):
         model = Tips
         fields = \
             [
-    "tittle",
-    "what_to_bring",
-    "what_to_bring_2",
-    "what_to_bring_3",
-    "what_to_bring_4",
-    "what_to_bring_5",
-    "what_to_bring_6",
-    "what_to_bring_7",
-    "what_to_bring_8",
-    "what_to_bring_9",
-    "what_to_bring_10",
-    "what_to_bring_11",
-    "what_to_bring_12",
-    "what_to_bring_13",
-    "what_to_bring_14",
-    "what_to_bring_15",
-    "tittle_2" ,
-    "description"
+                "tittle",
+                "what_to_bring",
+                "what_to_bring_2",
+                "what_to_bring_3",
+                "what_to_bring_4",
+                "what_to_bring_5",
+                "what_to_bring_6",
+                "what_to_bring_7",
+                "what_to_bring_8",
+                "what_to_bring_9",
+                "what_to_bring_10",
+                "what_to_bring_11",
+                "what_to_bring_12",
+                "what_to_bring_13",
+                "what_to_bring_14",
+                "what_to_bring_15",
+                "tittle_2",
+                "description"
             ]
 
     def to_representation(self, instance):
@@ -95,6 +95,7 @@ class TipsSerializer(serializers.ModelSerializer):
                 data[key] = None
         return data
 
+
 class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
@@ -102,21 +103,23 @@ class PhotoSerializer(serializers.ModelSerializer):
 
 
 class TourDatesSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = TourDates
         fields = '__all__'
 
 
 class BookingPrivateTourSerializer(serializers.ModelSerializer):
+    date = serializers.DateTimeField(format="%d.%m.%Y")
+    date_up_to = serializers.DateTimeField(format="%d.%m.%Y")
 
     class Meta:
         model = BookingPrivateTour
-        fields = '__all__'
+        fields = 'name email_or_whatsapp date date_up_to'.split()
 
 
 class BookingGroupTourSerializer(serializers.ModelSerializer):
     date_str = serializers.SerializerMethodField(read_only=True, default='None')
+
     # email_or_whatsapp = serializers.CharField()
 
     class Meta:
@@ -136,6 +139,7 @@ class BookingGroupTourSerializer(serializers.ModelSerializer):
     #
     #     return value
 
+
 class PriceDetailsCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = PriceDetails
@@ -143,11 +147,6 @@ class PriceDetailsCreateSerializer(serializers.ModelSerializer):
 
 
 class PriceDetailsSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = PriceDetails
         fields = '__all__'
-
-
-
-

@@ -37,7 +37,7 @@ class CarRental(models.Model):
     how_days_driving_without_driver_3 = models.IntegerField(verbose_name='Количество дней езды без водителя')
 
     def __str__(self):
-        return self.image
+        return self.name_car
 
 
 class Taxi(models.Model):

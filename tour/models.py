@@ -166,11 +166,11 @@ class BookingGroupTour(models.Model):
 class BookingPrivateTour(models.Model):
     name = models.CharField(max_length=100, blank=False, null=True, verbose_name="Имя: ")
     email_or_whatsapp = models.CharField(max_length=100, blank=False, null=True, verbose_name="Контакты: ")
-    date_from = models.CharField(max_length=100, blank=False, null=True, verbose_name="Дата от: ")
-    date_up_to = models.CharField(max_length=100, blank=False, null=True, verbose_name="Дата до: ")
+    date = models.DateTimeField(verbose_name="Дата от: ")
+    date_up_to = models.DateTimeField(verbose_name="Дата до: ")
 
     def __str__(self):
-        return self.name
+         return self.name + self.email_or_whatsapp + f" - {self.date} - {self.date_up_to}"
 
     class Meta:
         verbose_name = "Бронирование приватного тура"

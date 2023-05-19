@@ -2,6 +2,7 @@ import re
 
 import requests
 from django.db.migrations import serializer
+from django.http import HttpResponse
 from rest_framework import viewsets, status, permissions
 from rest_framework import viewsets, status, permissions, mixins, serializers
 from django_filters.rest_framework import DjangoFilterBackend
@@ -37,54 +38,49 @@ from .models import (
 from .filters import TourAddFilter
 
 
-@ratelimit(rate='5/h', block=True)
-class TelegramSendMessage(viewsets.ModelViewSet):
-    def create(self, request, *args, **kwargs):
-        try:
-            name = request.data.get("name")
-            contacts = request.data.get("email_or_whatsapp")
-            if not name:
-                raise serializers.ValidationError("Данное поле не может быть пустым")
-            if not contacts:
-                raise serializers.ValidationError("Данное поле не может быть пустым")
-            if not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', contacts) and not re.match(r'^\+[0-9]+$', contacts):
-                raise serializers.ValidationError\
-                    ("Поле email_or_whatsapp должно быть в формате email или номера WhatsApp")
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            # Отправка данных в телеграмм
-            bot_token = 'BOT TOKEN'
-            chat_id = 'CHAT ID'
-            message = f'Name: {serializer.data["name"]}\nEmail: {serializer.data["email_or_whatsapp"]}\nDate: {str(serializer.data["date"])}'
-            # Отправка данных в телеграм
-            bot_token = '5964377497:AAEXxcJ745bQpNUpB2neHIjMMkf0IBF5mn4'
-            chat_id = '860389338'
-            message = f'Name: {serializer.data["name"]}\n' \
-                      f'Contacts: {serializer.data["email_or_whatsapp"]}\n' \
-                      f'Date: {str(serializer.data["date_str"])}'
-            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
-            requests.post(url)
-
-            headers = self.get_success_headers(serializer.data)
-
-            response_data = {
-                "message": "Your request has been successfully submitted! A manager will contact you soon.",
-            }
-
-            return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
-        except serializers.ValidationError as e:
-            response_data = {
-                "message": str(e),
-            }
-
-            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
-        except Exception:
-            response_data = {
-                "message": "Your request has not been successfully submitted! Please try again later.",
-            }
-
-            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+# class TelegramSendMessage(viewsets.ModelViewSet):
+#     def create(self, request, *args, **kwargs):
+#         try:
+#             name = request.data.get("name")
+#             contacts = request.data.get("email_or_whatsapp")
+#             if not name:
+#                 raise serializers.ValidationError("Данное поле не может быть пустым")
+#             elif not contacts:
+#                 raise serializers.ValidationError("Данное поле не может быть пустым")
+#             elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', contacts) and not re.match(r'^\+[0-9]+$', contacts):
+#                 raise serializers.ValidationError\
+#                     ("Поле email_or_whatsapp должно быть в формате email или номера WhatsApp")
+#             serializer = self.get_serializer(data=request.data)
+#             serializer.is_valid(raise_exception=True)
+#             self.perform_create(serializer)
+#             # Отправка данных в телеграм
+#             bot_token = '5964377497:AAEXxcJ745bQpNUpB2neHIjMMkf0IBF5mn4'
+#             chat_id = '860389338'
+#             message = f'Name: {serializer.data["name"]}\n' \
+#                       f'Contacts: {serializer.data["email_or_whatsapp"]}\n' \
+#                       f'Date: {str(serializer.data["date_str"])}'
+#             url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
+#             requests.post(url)
+#
+#             headers = self.get_success_headers(serializer.data)
+#
+#             response_data = {
+#                 "message": "Your request has been successfully submitted! A manager will contact you soon.",
+#             }
+#
+#             return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
+#         except serializers.ValidationError as e:
+#             response_data = {
+#                 "message": str(e),
+#             }
+#
+#             return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+#         except Exception:
+#             response_data = {
+#                 "message": "Your request has not been successfully submitted! Please try again later.",
+#             }
+#
+#             return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class IsSuperuser(permissions.BasePermission):
@@ -255,7 +251,7 @@ class PriceViewSet(viewsets.ModelViewSet):
 
 class PriceDetailsCreateViewSet(viewsets.ViewSet):
     serializer_class = PriceDetailsCreateSerializer
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny,)
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -280,7 +276,7 @@ class PriceDetailsCreateViewSet(viewsets.ViewSet):
 class PriceDetailsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = PriceDetails.objects.all()
     serializer_class = PriceDetailsSerializer
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny,)
 
 
 class TipsViewSet(viewsets.ModelViewSet):
@@ -395,15 +391,135 @@ class TourDateViewSet(viewsets.ModelViewSet):
     permission_classes = [IsSuperuser | permissions.IsAuthenticatedOrReadOnly]
 
 
+import time
+from functools import wraps
+
+
+def limit_rate(num_requests, period):
+    def decorator(view_func):
+        request_history = []
+
+        @wraps(view_func)
+        def wrapped_view(*args, **kwargs):
+            current_time = time.time()
+
+            # Очистка истории запросов, удаляющая старые записи
+            request_history[:] = [timestamp for timestamp in request_history if timestamp > current_time - period]
+
+            if len(request_history) >= num_requests:
+                # Достигнуто ограничение частоты запросов
+                responce_len_ratelimit = {
+                    "message": "Rate limit exceeded",
+                }
+                return Response(responce_len_ratelimit, status=status.HTTP_429_TOO_MANY_REQUESTS)
+
+            request_history.append(current_time)
+            return view_func(*args, **kwargs)
+
+        return wrapped_view
+
+    return decorator
+
+
 # -*- coding: utf-8 -*-
 class BookingPrivateTourViewSet(viewsets.ModelViewSet):
     queryset = BookingPrivateTour.objects.all()
     serializer_class = BookingPrivateTourSerializer
 
+    @limit_rate(num_requests=3, period=3600)
+    def create(self, request, *args, **kwargs):
+        try:
+            name = request.data.get("name")
+            contacts = request.data.get("email_or_whatsapp")
+            if not name:
+                raise serializers.ValidationError("This field cannot be empty")
+            elif not contacts:
+                raise serializers.ValidationError("This field cannot be empty")
+            elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', contacts) and not re.match(r'^\+[0-9]+$', contacts):
+                raise serializers.ValidationError \
+                    ("The contact field must be in the format of email or whatsapp number")
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            # Отправка данных в телеграм
+            bot_token = '5964377497:AAEXxcJ745bQpNUpB2neHIjMMkf0IBF5mn4'
+            chat_id = '860389338'
+            message = f'Бронирование приватного тура\n' \
+                      f'Имя клиента: {serializer.data["name"]}\n' \
+                      f'Контакты: {serializer.data["email_or_whatsapp"]}\n' \
+                      f'Дата брони: {str(serializer.data["date"] + "-" + str(serializer.data["date_up_to"]))}\n'
+            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
+            requests.post(url)
+
+            headers = self.get_success_headers(serializer.data)
+
+            response_data = {
+                "message": "Your request has been successfully submitted! A manager will contact you soon.",
+            }
+
+            return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
+        except serializers.ValidationError as e:
+            response_data = {
+                "message": str(e),
+            }
+
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+        except Exception:
+            response_data = {
+                "message": "Your request has not been successfully submitted! Please try again later.",
+            }
+
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
 
 class BookingGroupTourViewSet(viewsets.ModelViewSet):
     queryset = BookingGroupTour.objects.all()
     serializer_class = BookingGroupTourSerializer
+
+    @limit_rate(num_requests=3, period=3600)
+    def create(self, request, *args, **kwargs):
+        try:
+            name = request.data.get("name")
+            contacts = request.data.get("email_or_whatsapp")
+            if not name:
+                raise serializers.ValidationError("This field cannot be empty")
+            elif not contacts:
+                raise serializers.ValidationError("This field cannot be empty")
+            elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', contacts) and not re.match(r'^\+[0-9]+$', contacts):
+                raise serializers.ValidationError \
+                    ("The contact field must be in the format of email or whatsapp number")
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            # Отправка данных в телеграм
+            bot_token = '5964377497:AAEXxcJ745bQpNUpB2neHIjMMkf0IBF5mn4'
+            chat_id = '860389338'
+            message = f'Бронирование группового тура\n' \
+                      f'Имя клиента: {serializer.data["name"]}\n' \
+                      f'Контакты: {serializer.data["email_or_whatsapp"]}\n' \
+                      f'Дата брони: {str(serializer.data["date_str"])}'
+            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
+            requests.post(url)
+
+            headers = self.get_success_headers(serializer.data)
+
+            response_data = {
+                "message": "Your request has been successfully submitted! A manager will contact you soon.",
+            }
+
+            return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
+        except serializers.ValidationError as e:
+            response_data = {
+                "message": str(e),
+            }
+
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+        except Exception:
+            response_data = {
+                "message": "Your request has not been successfully submitted! Please try again later.",
+            }
+
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TourDatesCreateViewSet(viewsets.ModelViewSet):
@@ -416,8 +532,3 @@ class TourDatesCreateViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-
-
-
