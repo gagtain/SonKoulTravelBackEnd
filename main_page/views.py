@@ -11,7 +11,6 @@ class FormQuestionViewSet(viewsets.ModelViewSet):
     queryset = FormQuestion.objects.all()
     serializer_class = FormQuestionSerializer
 
-
     def create(self, request, *args, **kwargs):
         try:
             serializer = self.get_serializer(data=request.data)
