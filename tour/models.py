@@ -76,6 +76,20 @@ class Price(models.Model):
         verbose_name = "Что входит в стоимость и не входит в стоимость"
 
 
+class PriceDetails(models.Model):
+    person = models.IntegerField(blank=True, null=True, verbose_name="Количество человек: ")
+    in_com = models.IntegerField(blank=True, null=True, verbose_name="Общая цена: ")
+    per_person = models.IntegerField(blank=True, null=True, verbose_name="Цена за одного человека: ")
+
+    def __str__(self):
+        return str(self.per_person)
+
+    class Meta:
+        verbose_name = "Цена: "
+        verbose_name_plural = "Цены: "
+
+
+
 class Tips(models.Model):
     tittle = models.CharField(max_length=100, verbose_name="Заголовок")
     what_to_bring = models.CharField(max_length=100, verbose_name="Список")
@@ -125,10 +139,11 @@ class Photo(models.Model):
 
 
 class TourDates(models.Model):
-    date = models.CharField(max_length=100, verbose_name="Добавить дату тура")
+    date_from = models.CharField(max_length=100, blank=False, null=True, verbose_name="Дата от: ")
+    date_up_to = models.CharField(max_length=100, blank=False, null=True, verbose_name="Дата до: ")
 
     def __str__(self) -> str:
-        return f"{self.date}"
+        return f"{self.date_from} - {self.date_up_to}"
 
     class Meta:
         verbose_name = "Добавить дату тура"
@@ -136,8 +151,8 @@ class TourDates(models.Model):
 
 
 class BookingGroupTour(models.Model):
-    name = models.CharField(max_length=100)
-    email_or_whatsapp = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, blank=False, null=True, verbose_name="Имя: ")
+    email_or_whatsapp = models.CharField(max_length=100, blank=False, null=True, verbose_name="Контакты: ")
     date = models.ForeignKey(TourDates, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
@@ -149,9 +164,10 @@ class BookingGroupTour(models.Model):
 
 
 class BookingPrivateTour(models.Model):
-    name = models.CharField(max_length=100)
-    email_or_whatsapp = models.CharField(max_length=100)
-    date = models.ForeignKey(TourDates, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, blank=False, null=True, verbose_name="Имя: ")
+    email_or_whatsapp = models.CharField(max_length=100, blank=False, null=True, verbose_name="Контакты: ")
+    date_from = models.CharField(max_length=100, blank=False, null=True, verbose_name="Дата от: ")
+    date_up_to = models.CharField(max_length=100, blank=False, null=True, verbose_name="Дата до: ")
 
     def __str__(self):
         return self.name
@@ -159,3 +175,17 @@ class BookingPrivateTour(models.Model):
     class Meta:
         verbose_name = "Бронирование приватного тура"
         verbose_name_plural = "Бронирование приватных туров"
+
+
+class TourDate(models.Model):
+    date_from = models.CharField(max_length=100, blank=False, null=True, verbose_name='Дата от: ')
+    date_up_to = models.CharField(max_length=100, blank=False, null=True, verbose_name='Дата до: ')
+
+    def __str__(self):
+        return f"{self.date_from} - {self.date_up_to}"
+
+    class Meta:
+        verbose_name = "Дата: "
+        verbose_name_plural = "Даты: "
+
+
