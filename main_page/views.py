@@ -1,12 +1,40 @@
 import requests
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from django.core.cache import caches  # Заменили get_cache на caches
+import time
+from functools import wraps
 
 from .models import FormQuestion
 from .serializers import FormQuestionSerializer
 
 
+def limit_rate(num_requests, period):
+    def decorator(view_func):
+        request_history = []
+
+        @wraps(view_func)
+        def wrapped_view(*args, **kwargs):
+            current_time = time.time()
+
+            # Очистка истории запросов, удаляющая старые записи
+            request_history[:] = [timestamp for timestamp in request_history if timestamp > current_time - period]
+
+            if len(request_history) >= num_requests:
+                # Достигнуто ограничение частоты запросов
+                responce_len_ratelimit = {
+                    "message": "Rate limit exceeded",
+                }
+                return Response(responce_len_ratelimit, status=status.HTTP_429_TOO_MANY_REQUESTS)
+
+            request_history.append(current_time)
+            return view_func(*args, **kwargs)
+
+        return wrapped_view
+
+    return decorator
+
+
+@limit_rate(num_requests=3, period=3600)
 class FormQuestionViewSet(viewsets.ModelViewSet):
     queryset = FormQuestion.objects.all()
     serializer_class = FormQuestionSerializer
@@ -20,7 +48,7 @@ class FormQuestionViewSet(viewsets.ModelViewSet):
             # Отправка данных в телеграмм
             bot_token = '5964377497:AAEXxcJ745bQpNUpB2neHIjMMkf0IBF5mn4'
             chat_id = '860389338'
-            message = f'Question main page: {serializer.data["question_text"]}\nContacts: {serializer.data["contact"]}\n created_at: {str(serializer.data["created_at"])}'
+            message = f'Вопросы с главной страницы: {serializer.data["question_text"]}\nКонтакты: {serializer.data["contact"]}\n Создано в: {str(serializer.data["created_at"])}'
             url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
             requests.post(url)
 
