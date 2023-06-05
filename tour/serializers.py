@@ -2,7 +2,6 @@ import re
 from datetime import datetime
 
 from rest_framework import serializers
-from rest_framework.response import Response
 
 from .models import (
     TourAdd,
@@ -12,7 +11,7 @@ from .models import (
     Photo,
     TourDates,
     BookingPrivateTour,
-    BookingGroupTour, PriceDetails, TourDate,
+    BookingGroupTour, PriceDetails,
 )
 
 

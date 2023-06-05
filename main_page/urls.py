@@ -1,9 +1,9 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import FormQuestionViewSet
+from main_page.views import FormQuestionViewSet
 
-router = routers.DefaultRouter()
+router = routers.SimpleRouter()
 router.register(r'questions', FormQuestionViewSet)
 
 urlpatterns = [

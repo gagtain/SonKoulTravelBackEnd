@@ -34,7 +34,6 @@ def limit_rate(num_requests, period):
     return decorator
 
 
-@limit_rate(num_requests=3, period=3600)
 class FormQuestionViewSet(viewsets.ModelViewSet):
     queryset = FormQuestion.objects.all()
     serializer_class = FormQuestionSerializer

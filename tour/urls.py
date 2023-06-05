@@ -9,7 +9,7 @@ from .views import (
     PhotoViewSet,
     TourDateViewSet,
     BookingGroupTourViewSet,
-    BookingPrivateTourViewSet, PriceDetailsCreateViewSet, PriceDetailsViewSet, TourDatesCreateViewSet,
+    BookingPrivateTourViewSet, PriceDetailsCreateViewSet, PriceDetailsViewSet,
 )
 
 router = routers.DefaultRouter()
