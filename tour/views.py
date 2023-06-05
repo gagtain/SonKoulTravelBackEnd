@@ -8,12 +8,8 @@ from rest_framework import viewsets, status, permissions, mixins, serializers
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-import telegram
-from ratelimit.decorators import ratelimit
 from rest_framework import status
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 
 from .serializers import (
     TourAddSerializer,
@@ -33,7 +29,7 @@ from .models import (
     Photo,
     TourDates,
     BookingGroupTour,
-    BookingPrivateTour, PriceDetails, TourDate,
+    BookingPrivateTour, PriceDetails,
 )
 from .filters import TourAddFilter
 
@@ -520,15 +516,3 @@ class BookingGroupTourViewSet(viewsets.ModelViewSet):
             }
 
             return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
-
-
-class TourDatesCreateViewSet(viewsets.ModelViewSet):
-    queryset = TourDate.objects.all()
-    serializer_class = TourDatesSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

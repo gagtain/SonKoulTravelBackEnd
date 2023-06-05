@@ -24,15 +24,23 @@ class TourAdd(models.Model):
 
 
 class TourProgram(models.Model):
-    how_day = models.IntegerField()
-    path_to_tour = models.CharField(max_length=100)
-    location_first = models.CharField(max_length=100)
-    hours_from_car = models.CharField(max_length=100)
-    location_second = models.CharField(max_length=100)
-    hours_from_horse = models.CharField(max_length=100)
-    location_third = models.CharField(max_length=100)
-    title = models.CharField(max_length=100)
-    description = models.TextField()
+    BY_CAR = '1'
+    BY_WALK = '2'
+    BY_HORSE = '3'
+    TRANSPORT_CHOICES = ((BY_CAR, 'Машина'),
+                         (BY_HORSE, 'Лошадь'),
+                         (BY_WALK, 'Пешком'))
+    how_day = models.IntegerField(verbose_name="номер дня")
+    location_first = models.CharField(max_length=100, verbose_name="Первая локация")
+    first_transport_duration = models.CharField(max_length=100, verbose_name="Длительность первой поездки")
+    first_transport_type = models.CharField(max_length=100, choices=TRANSPORT_CHOICES, verbose_name="Тип траспорта")
+    location_second = models.CharField(max_length=100, verbose_name="Вторая локация")
+    second_transport_duration = models.CharField(max_length=100, verbose_name="Длительность второй поездки")
+    second_transport_type = models.CharField(max_length=100, choices=TRANSPORT_CHOICES, verbose_name="Тип транспорта")
+    location_third = models.CharField(max_length=100, verbose_name="Третья локация")
+    title = models.CharField(max_length=100, verbose_name="Заголовок")
+    description = models.TextField(verbose_name="Описание")
+    tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, verbose_name="Тур", related_name="programs")
 
     def __str__(self):
         return self.title
@@ -44,6 +52,7 @@ class TourProgram(models.Model):
 
 
 class Price(models.Model):
+    tour = models.OneToOneField(TourAdd, on_delete=models.CASCADE, related_name="prices", verbose_name="Ценовые включения")
     price_includes = models.CharField(max_length=100)
     price_includes_2 = models.CharField(max_length=100, blank=True, null=True)
     price_includes_3 = models.CharField(max_length=100, blank=True, null=True)
@@ -80,7 +89,7 @@ class PriceDetails(models.Model):
     person = models.IntegerField(blank=True, null=True, verbose_name="Количество человек: ")
     in_com = models.IntegerField(blank=True, null=True, verbose_name="Общая цена: ")
     per_person = models.IntegerField(blank=True, null=True, verbose_name="Цена за одного человека: ")
-
+    tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, verbose_name="Тур", related_name="price_details")
     def __str__(self):
         return str(self.per_person)
 
@@ -109,6 +118,7 @@ class Tips(models.Model):
     what_to_bring_15 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
     tittle_2 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Заголовок 2")
     description = models.TextField(verbose_name="Описание")
+    tour = models.OneToOneField(TourAdd, on_delete=models.Case, related_name="tips", verbose_name="Тур")
 
     def __str__(self):
         return self.tittle
@@ -129,7 +139,7 @@ class Photo(models.Model):
     image_8 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
     image_9 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
     image_10 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
-
+    tour = models.OneToOneField(TourAdd, on_delete=models.CASCADE, verbose_name="Тур", related_name="photos")
     def __str__(self):
         return self.image
 
@@ -141,6 +151,7 @@ class Photo(models.Model):
 class TourDates(models.Model):
     date_from = models.CharField(max_length=100, blank=False, null=True, verbose_name="Дата от: ")
     date_up_to = models.CharField(max_length=100, blank=False, null=True, verbose_name="Дата до: ")
+    tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, related_name="dates", verbose_name="Туры")
 
     def __str__(self) -> str:
         return f"{self.date_from} - {self.date_up_to}"
@@ -153,7 +164,8 @@ class TourDates(models.Model):
 class BookingGroupTour(models.Model):
     name = models.CharField(max_length=100, blank=False, null=True, verbose_name="Имя: ")
     email_or_whatsapp = models.CharField(max_length=100, blank=False, null=True, verbose_name="Контакты: ")
-    date = models.ForeignKey(TourDates, on_delete=models.CASCADE)
+    date = models.ForeignKey(TourDates, on_delete=models.CASCADE, related_name="group_bookings")
+    tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, related_name="group_bookings")
 
     def __str__(self) -> str:
         return self.name
@@ -168,6 +180,7 @@ class BookingPrivateTour(models.Model):
     email_or_whatsapp = models.CharField(max_length=100, blank=False, null=True, verbose_name="Контакты: ")
     date = models.DateTimeField(verbose_name="Дата от: ")
     date_up_to = models.DateTimeField(verbose_name="Дата до: ")
+    tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, related_name="private_bookings")
 
     def __str__(self):
          return self.name + self.email_or_whatsapp + f" - {self.date} - {self.date_up_to}"
@@ -175,17 +188,3 @@ class BookingPrivateTour(models.Model):
     class Meta:
         verbose_name = "Бронирование приватного тура"
         verbose_name_plural = "Бронирование приватных туров"
-
-
-class TourDate(models.Model):
-    date_from = models.CharField(max_length=100, blank=False, null=True, verbose_name='Дата от: ')
-    date_up_to = models.CharField(max_length=100, blank=False, null=True, verbose_name='Дата до: ')
-
-    def __str__(self):
-        return f"{self.date_from} - {self.date_up_to}"
-
-    class Meta:
-        verbose_name = "Дата: "
-        verbose_name_plural = "Даты: "
-
-

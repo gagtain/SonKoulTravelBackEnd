@@ -1,5 +1,6 @@
 media
 pycache
+*/__pycache__/
 # Byte-compiled / optimized / DLL files
 pycache/
 *.py[cod]
@@ -60,8 +61,7 @@ coverage.xml
 *.log
 local_settings.py
 db.sqlite3
-client_actions/migrations
-tour/migrations/
+*/migrations/00*.py
 db.sqlite3-journal
 
 # Flask stuff:
