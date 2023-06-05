@@ -3,7 +3,7 @@ from rest_framework import routers
 
 from main_page.views import FormQuestionViewSet
 
-router = routers.SimpleRouter()
+router = routers.DefaultRouter()
 router.register(r'questions', FormQuestionViewSet)
 
 urlpatterns = [
