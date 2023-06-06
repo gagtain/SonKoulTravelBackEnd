@@ -443,6 +443,7 @@ class BookingPrivateTourViewSet(viewsets.ModelViewSet):
             message = f'Бронирование приватного тура\n' \
                       f'Имя клиента: {serializer.data["name"]}\n' \
                       f'Контакты: {serializer.data["email_or_whatsapp"]}\n' \
+                      f'Тур: {serializer.data["tour"]}\n' \
                       f'Дата брони: {str(serializer.data["date"] + "-" + str(serializer.data["date_up_to"]))}\n'
             url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
             requests.post(url)
@@ -493,7 +494,8 @@ class BookingGroupTourViewSet(viewsets.ModelViewSet):
             message = f'Бронирование группового тура\n' \
                       f'Имя клиента: {serializer.data["name"]}\n' \
                       f'Контакты: {serializer.data["email_or_whatsapp"]}\n' \
-                      f'Дата брони: {str(serializer.data["date_str"])}'
+                      f'Дата брони: {str(serializer.data["date_str"])}\n'\
+                      f'Тур: {str(serializer.data["tour"])}'
             url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
             requests.post(url)
 
@@ -510,9 +512,11 @@ class BookingGroupTourViewSet(viewsets.ModelViewSet):
             }
 
             return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
-        except Exception:
+        except Exception as e:
             response_data = {
                 "message": "Your request has not been successfully submitted! Please try again later.",
+                "error": str(e),
             }
 
             return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
