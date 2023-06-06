@@ -2,19 +2,11 @@ from rest_framework import viewsets, status, permissions
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 
-from .serializers import (
-    BlogSerializer,
-    BodySerializer
-)
+from .serializers import BlogSerializer
 
-from .models import (
-    BlogNews,
-    Body
-)
+from .models import BlogNews
 
-from .filters import (
-    BlogFilter
-)
+from .filters import BlogFilter
 
 
 class IsSuperuser(permissions.BasePermission):
@@ -29,9 +21,3 @@ class BlogViewSet(viewsets.ModelViewSet):
     filterset_class = BlogFilter
     permission_classes = [IsSuperuser | permissions.IsAuthenticatedOrReadOnly]
     search_fields = ['title', 'category']
-
-
-class BodyViewSet(viewsets.ModelViewSet):
-    queryset = Body.objects.all()
-    serializer_class = BodySerializer
-    permission_classes = [IsSuperuser | permissions.IsAuthenticatedOrReadOnly]

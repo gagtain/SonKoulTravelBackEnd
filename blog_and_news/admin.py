@@ -1,6 +1,8 @@
 from django.contrib import admin
+from django_summernote import admin as sadmin
 
-from .models import BlogNews, Body
+from .models import BlogNews
 
-admin.site.register(BlogNews)
-admin.site.register(Body)
+@admin.register(BlogNews)
+class BlogNewsAdmin(sadmin.SummernoteModelAdmin):
+    summernote_fields = ('content',)

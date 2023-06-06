@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import BlogNews, Body
+from .models import BlogNews
 
 
 class BlogSerializer(serializers.ModelSerializer):
@@ -8,11 +8,4 @@ class BlogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BlogNews
-        fields = 'title category date_posted image'.split()
-
-
-class BodySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Body
-        fields = '__all__'
+        fields = 'title category date_posted image content'.split()
