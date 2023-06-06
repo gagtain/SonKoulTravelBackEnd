@@ -1,7 +1,6 @@
 import os
 import requests
 
-
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
@@ -18,25 +17,8 @@ from .models import (
 
 from .serializers import (
     CommentViewSerializer,
+
 )
-
-
-class TelegramMixin:
-    def send_telegram_message(self, message):
-        bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
-        chat_id = os.getenv('TELEGRAM_CHAT_ID')
-        url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
-        try:
-            response = requests.post(url)
-            response.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            raise APIException('Error while sending Telegram message') from e
-
-
-class CommentNameViewSet(viewsets.ModelViewSet):
-    queryset = CommentName.objects.all()
-    serializer_class = CommentNameSerializer
-
 
 class MyPagination(PageNumberPagination):
     page_size = 6  # Количество элементов на одной странице
@@ -59,8 +41,16 @@ class CommentViewViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]
 
+    def list(self, request, *args, **kwargs):
+        if not request.user.is_staff:  # Проверяем, является ли пользователь администратором
+            queryset = self.filter_queryset(self.get_queryset().filter(is_approved=True))
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            return super().list(request, *args, **kwargs)
+
     def create(self, request, *args, **kwargs):
-        super().create
+        super().create(request, *args, **kwargs)
         mutable_data = request.data
         mutable_data["is_approved"] = False
         mutable_data["at_moderation"] = timezone.now()
@@ -73,31 +63,10 @@ class CommentViewViewSet(viewsets.ModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response(responce_201, status=status.HTTP_201_CREATED, headers=headers)
         responce_400 = {
-            "message": "Упс! Что-то пошло не так. Разработчики уже работают над исправлением, и вы сможете добавить комментарии снова."
+            "message": "Упс! Что-то пошло не так. Разработчики уже работают над исправлением, и вы сможете добавить комментарии снова.",
+            "data": serializer.errors
         }
         return Response(responce_400, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=['POST'])
-    def cleanup_comments(self, request, *args, **kwargs):
-        # Выполнить действия по очистке комментариев
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    @action(detail=True, methods=['PUT'])
-    def approve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.is_approved = True
-        if instance.is_approved is True:
-            instance.save()
-            response_200 = {
-                "message": "Comment has been approved and is now available."
-            }
-            return Response(response_200, status=status.HTTP_200_OK)
-        if instance.is_approved is False:
-            instance.delete()
-            responce_400 = {
-                "message": "Комментарий не может быть пройден"
-            }
-            return Response(responce_400, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -126,32 +95,3 @@ class CommentViewViewSet(viewsets.ModelViewSet):
             "message": "Insufficient permissions! Only admins can delete comments."
         }
         return Response(response_403, status=status.HTTP_403_FORBIDDEN)
-
-class FormQuestionViewSet(TelegramMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = FormQuestion.objects.all()
-    serializer_class = FormQuestionSerializer
-
-    def perform_create(self, serializer):
-        try:
-            super().perform_create(serializer)
-            message = f'Форма Главной страницы \nEmail: {serializer.data["email"]}\nMessage: {serializer.data["message"]}'
-            self.send_telegram_message(message)
-        except APIException:
-            return Response({'error': 'Error while sending Telegram message'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class FormBookingViewSet(TelegramMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = FormBooking.objects.all()
-    serializer_class = FormBookingSerializer
-
-    def perform_create(self, serializer):
-        try:
-            super().perform_create(serializer)
-            message = f'Форма страницы тура \n' \
-                      f'Name: {serializer.data["name"]}\n' \
-                      f'Email: {serializer.data["email"]}\n' \
-                      f'WhatsApp: {serializer.data["whatsapp"]} \n ' \
-                      f'Дата: {serializer.data["date"]}'
-            self.send_telegram_message(message)
-        except APIException:
-            return Response({'error': 'Error while sending Telegram message'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

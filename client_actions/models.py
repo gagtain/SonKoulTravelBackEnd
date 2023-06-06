@@ -32,7 +32,8 @@ class CommentView(models.Model):
     at_moderation = models.DateTimeField(blank=True, null=True, verbose_name="Дата публикации")
 
     def __str__(self):
-        return f"{self.stars} {self.name} {self.text} {self.image} {str(self.tour)} {str(self.date)}"
+
+        return f"Комментарий: {self.id} Рейтинг: звезд: {self.stars}"
 
     class Meta:
         verbose_name_plural = 'Комментарии'

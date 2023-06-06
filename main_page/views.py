@@ -38,6 +38,7 @@ class FormQuestionViewSet(viewsets.ModelViewSet):
     queryset = FormQuestion.objects.all()
     serializer_class = FormQuestionSerializer
 
+    @limit_rate(num_requests=3, period=3600)
     def create(self, request, *args, **kwargs):
         try:
             serializer = self.get_serializer(data=request.data)

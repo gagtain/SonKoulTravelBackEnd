@@ -26,6 +26,11 @@ class TourProgramSerializer(serializers.ModelSerializer):
         model = TourProgram
         fields = '__all__'
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['tour'] = instance.tour.name
+        return data
+
 
 class PriceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -100,11 +105,21 @@ class PhotoSerializer(serializers.ModelSerializer):
         model = Photo
         fields = '__all__'
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['tour'] = instance.tour.name
+        return data
+
 
 class TourDatesSerializer(serializers.ModelSerializer):
     class Meta:
         model = TourDates
         fields = '__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['tour'] = instance.tour.name
+        return data
 
 
 class BookingPrivateTourSerializer(serializers.ModelSerializer):
@@ -113,7 +128,14 @@ class BookingPrivateTourSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BookingPrivateTour
-        fields = 'name email_or_whatsapp date date_up_to'.split()
+        fields = 'id name email_or_whatsapp date date_up_to tour'.split()
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['tour'] = instance.tour.name
+        return data
+
+
 
 
 class BookingGroupTourSerializer(serializers.ModelSerializer):
@@ -123,10 +145,15 @@ class BookingGroupTourSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BookingGroupTour
-        fields = 'id name email_or_whatsapp date date_str'.split()
+        fields = 'name email_or_whatsapp date date_str tour'.split()
 
     def get_date_str(self, instance):
         return str(instance.date)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['tour'] = instance.tour.name
+        return data
 
     # def validate_email_or_whatsapp(self, value):
     #     if not value:
@@ -142,10 +169,15 @@ class BookingGroupTourSerializer(serializers.ModelSerializer):
 class PriceDetailsCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = PriceDetails
-        fields = 'person per_person'.split()
+        fields = 'id person per_person tour'.split()
 
 
 class PriceDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = PriceDetails
         fields = '__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['tour'] = instance.tour.name
+        return data

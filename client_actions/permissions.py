@@ -1,3 +1,4 @@
+from rest_framework import permissions
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
@@ -37,3 +38,13 @@ class CommentPermission(BasePermission):
             return True
         else:
             return False
+
+class IsVisibleAdminInComment(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_staff:
+            return True
+
+        if obj.is_approved is False:
+            return False
+
+        return True
