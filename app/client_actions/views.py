@@ -20,16 +20,10 @@ from .serializers import (
 
 )
 
-class MyPagination(PageNumberPagination):
-    page_size = 6  # Количество элементов на одной странице
-    page_query_param = 'page'  # Название параметра запроса, содержащего номер страницы
-    page_size_query_param = 'page_size'  # Название параметра запроса, содержащего количество элементов на странице
-
 
 class CommentViewViewSet(viewsets.ModelViewSet):
     queryset = CommentView.objects.all()
     serializer_class = CommentViewSerializer
-    pagination_class = MyPagination
     ordering = ['created_at']
     ordering_fields = ['-created_at', 'rating']
     allowed_actions = ['create', 'list', 'retrieve']
