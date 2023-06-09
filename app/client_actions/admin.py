@@ -1,18 +1,21 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from client_actions.models import (
+from .models import (
     CommentView,
+    Photo
 )
 
-admin.site.register(CommentView)
+admin.site.register(Photo)
 
 
+class PhotoInline(admin.TabularInline):
+    model = Photo
+    extra = 0
+
+
+@admin.register(CommentView)
 class CommentViewAdmin(admin.ModelAdmin):
-    list_display = ('stars', 'name', 'text', 'image', 'created_at')
-    list_filter = ('created_at', 'stars')
-
-    def image_preview(self, obj):
-        return format_html('<img src="{}" style="max-height: 200px;"/>'.format(obj.image.url))
-
-    image_preview.short_description = 'image'
+    list_display = ('stars', 'name', 'text', 'date')
+    list_filter = ('date', 'stars')
+    inlines = [PhotoInline]

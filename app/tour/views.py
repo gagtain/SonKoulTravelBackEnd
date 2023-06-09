@@ -19,7 +19,8 @@ from .serializers import (
     PhotoSerializer,
     BookingPrivateTourSerializer,
     BookingGroupTourSerializer,
-    TourDatesSerializer, PriceDetailsCreateSerializer, PriceDetailsSerializer
+    TourDatesSerializer, PriceDetailsCreateSerializer, PriceDetailsSerializer,
+    TourDetailSerializer,
 )
 from .models import (
     TourAdd,
@@ -86,10 +87,14 @@ class IsSuperuser(permissions.BasePermission):
 
 class TourAddViewSet(viewsets.ModelViewSet):
     queryset = TourAdd.objects.all()
-    serializer_class = TourAddSerializer
     permission_classes = [IsSuperuser | permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_class = TourAddFilter
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return TourDetailSerializer
+        return TourAddSerializer
 
     def create(self, request):
         serializer = TourAddSerializer(data=request.data)
@@ -494,7 +499,7 @@ class BookingGroupTourViewSet(viewsets.ModelViewSet):
             message = f'Бронирование группового тура\n' \
                       f'Имя клиента: {serializer.data["name"]}\n' \
                       f'Контакты: {serializer.data["email_or_whatsapp"]}\n' \
-                      f'Дата брони: {str(serializer.data["date_str"])}\n'\
+                      f'Дата брони: {str(serializer.data["date_str"])}\n' \
                       f'Тур: {str(serializer.data["tour"])}'
             url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
             requests.post(url)
@@ -519,4 +524,3 @@ class BookingGroupTourViewSet(viewsets.ModelViewSet):
             }
 
             return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
-

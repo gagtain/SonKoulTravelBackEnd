@@ -18,7 +18,20 @@ from .models import (
 class TourAddSerializer(serializers.ModelSerializer):
     class Meta:
         model = TourAdd
-        fields = '__all__'
+        fields = ('id', 'name', 'tour_time', 'number_of_people', 'price', 'when_is_tour')
+
+    def to_representation(self, instance):
+        host = self.context.get('request').get_host() if self.context.get('request') else ''
+        data = super().to_representation(instance)
+        images = [f"{host}{instance.image.url}"]
+        for i in range(2, 7):
+            image_key = f'image_{i}'
+            image_instance = getattr(instance, image_key)
+            if image_instance:
+                image_url = f"{host}{image_instance.url}"
+                images.append(image_url)
+        data['images'] = images
+        return data
 
 
 class TourProgramSerializer(serializers.ModelSerializer):
@@ -38,32 +51,24 @@ class PriceSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'price_includes',
-            'price_includes_2',
-            'price_includes_3',
-            'price_includes_4',
-            'price_includes_5',
-            'price_includes_6',
-            'price_includes_7',
-            'price_includes_8',
-            'price_includes_9',
-            'price_includes_10',
             'price_not_includes',
-            'price_not_includes_2',
-            'price_not_includes_3',
-            'price_not_includes_4',
-            'price_not_includes_5',
-            'price_not_includes_6',
-            'price_not_includes_7',
-            'price_not_includes_8',
-            'price_not_includes_9',
-            'price_not_includes_10',
         )
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        for key, value in data.items():
-            if not value:
-                data[key] = None
+        price_includes = data.get('price_includes', '')
+        price_not_includes = data.get('price_not_includes', '')
+
+        if isinstance(price_includes, str):
+            data['price_includes'] = [value.strip() for value in price_includes.split(',') if value.strip()]
+        else:
+            del data['price_includes']  # Удалить поле, если значение не является строкой
+
+        if isinstance(price_not_includes, str):
+            data['price_not_includes'] = [value.strip() for value in price_not_includes.split(',') if value.strip()]
+        else:
+            del data['price_not_includes']  # Удалить поле, если значение не является строкой
+
         return data
 
 
@@ -74,40 +79,35 @@ class TipsSerializer(serializers.ModelSerializer):
             [
                 "tittle",
                 "what_to_bring",
-                "what_to_bring_2",
-                "what_to_bring_3",
-                "what_to_bring_4",
-                "what_to_bring_5",
-                "what_to_bring_6",
-                "what_to_bring_7",
-                "what_to_bring_8",
-                "what_to_bring_9",
-                "what_to_bring_10",
-                "what_to_bring_11",
-                "what_to_bring_12",
-                "what_to_bring_13",
-                "what_to_bring_14",
-                "what_to_bring_15",
                 "tittle_2",
                 "description"
             ]
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        for key, value in data.items():
-            if not value:
-                data[key] = None
+        what_to_bring = data.get('what_to_bring', '')
+        if isinstance(what_to_bring, str):
+            data['what_to_bring'] = [value.strip() for value in what_to_bring.split(',') if value.strip()]
         return data
 
 
 class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
-        fields = '__all__'
+        fields = 'id'.split()
 
     def to_representation(self, instance):
+        host = self.context.get('request').get_host() if self.context.get('request') else ''
         data = super().to_representation(instance)
         data['tour'] = instance.tour.name
+        images = [f"{host}{instance.image.url}"]
+        for i in range(2, 11):
+            image_key = f'image_{i}'
+            image_instance = getattr(instance, image_key)
+            if image_instance:
+                image_url = f"{host}{image_instance.url}"
+                images.append(image_url)
+        data['images'] = images
         return data
 
 
@@ -134,8 +134,6 @@ class BookingPrivateTourSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data['tour'] = instance.tour.name
         return data
-
-
 
 
 class BookingGroupTourSerializer(serializers.ModelSerializer):
@@ -180,4 +178,36 @@ class PriceDetailsSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['tour'] = instance.tour.name
+        return data
+
+
+class TourDetailSerializer(serializers.ModelSerializer):
+    tour_program = TourProgramSerializer(many=True, read_only=True)
+    prices = PriceSerializer(read_only=True)
+    price_details = PriceDetailsSerializer(many=True, read_only=True)
+    tips = TipsSerializer(read_only=True)
+    photos = PhotoSerializer(read_only=True)
+    tour_dates = TourDatesSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = TourAdd
+        fields = (
+            'id', 'name', 'tour_time', 'number_of_people', 'price', 'when_is_tour', 'tour_program', 'prices',
+            'price_details', 'tips', 'photos', 'tour_dates')
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        host = request.get_host() if request else ''
+        context = self.context
+        photos_serializer = self.fields['photos']
+        photos_serializer.context.update(context)
+        data = super().to_representation(instance)
+        images = [f"{host}{instance.image.url}"]
+        for i in range(2, 7):
+            image_key = f'image_{i}'
+            image_instance = getattr(instance, image_key)
+            if image_instance:
+                image_url = f"{host}{image_instance.url}"
+                images.append(image_url)
+        data['images'] = images
         return data
