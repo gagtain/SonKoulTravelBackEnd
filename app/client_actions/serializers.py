@@ -1,25 +1,39 @@
 from rest_framework import serializers
 
-from .models import CommentView
+from .models import CommentView, Photo
+from .compress_image import compress_image
 
 
 class BaseSerializer(serializers.ModelSerializer):
     read_only_fields = ('id',)
 
-class CommentViewSerializer(BaseSerializer):
-    date = serializers.DateTimeField(read_only=True, format='%Y-%m-%d')
+
+class PhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Photo
+        fields = ['photo']
+
+    def create(self, validated_data):
+        photo = Photo.objects.create(**validated_data)
+        compress_image(photo)
+        return photo
+
+
+class CommentViewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CommentView
-        fields = 'id stars name text image image_two image_three image_four tour date is_approved'.split()
-        read_only_fields = ('id',)
-
+        fields = ['id', 'stars', 'name', 'text', 'photos', 'tour', 'date', 'is_approved']
+        read_only_fields = ('id', 'date', 'is_approved')
         extra_kwargs = {
             "tour": {"required": False},
-            "id": {"required": False},
+            "id": {"required": False}
+
         }
 
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data['tour'] = instance.tour.name
-        return data
+    def create(self, validated_data):
+        photos_data = validated_data.pop('photos')
+        comment = CommentView.objects.create(**validated_data)
+        for photo_data in photos_data:
+            Photo.objects.create(comment=comment, **photo_data)
+        return comment

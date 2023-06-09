@@ -18,21 +18,17 @@ STAR_CHOICES = [
 
 ]
 
+
 class CommentView(models.Model):
     stars = models.IntegerField(default=0, choices=STAR_CHOICES, verbose_name="Оценка тура")
     name = models.CharField(max_length=100)
     text = models.TextField(verbose_name="ваш отзыв")
-    image = models.ImageField(upload_to="static/images", verbose_name="Изображение")
-    image_two = models.ImageField(upload_to="static/images", verbose_name="Изображение 2(необязательно)", null=True, blank=True)
-    image_three = models.ImageField(upload_to="static/images", verbose_name="Изображение 3(необязательно)", null=True, blank=True)
-    image_four = models.ImageField(upload_to="static/images", verbose_name="Изображение 4(необязательно)", null=True, blank=True)
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, verbose_name="выбрать тур")
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
     is_approved = models.BooleanField(default=False)
     at_moderation = models.DateTimeField(blank=True, null=True, verbose_name="Дата публикации")
 
     def __str__(self):
-
         return f"Комментарий: {self.id} Рейтинг: звезд: {self.stars}"
 
     class Meta:
@@ -40,3 +36,15 @@ class CommentView(models.Model):
         verbose_name = 'Комментарий'
 
         ordering = ['-date']
+
+
+class Photo(models.Model):
+    comment = models.ForeignKey(CommentView, related_name='photos', on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='comment_photos')
+
+    def __str__(self):
+        return "Фотография к комментариям"
+
+    class Meta:
+        verbose_name_plural = 'Фотографии комментарии'
+        verbose_name = 'Фотография комментария'

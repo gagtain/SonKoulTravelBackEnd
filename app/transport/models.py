@@ -46,6 +46,8 @@ class Taxi(models.Model):
     name_taxi = models.CharField(max_length=100, verbose_name='Тип такси')
     price = models.IntegerField(verbose_name='Цена')
     how_hours = models.CharField(max_length=40, verbose_name='Количество часов')
+    map = models.ImageField(upload_to='taxi_map_to_path', blank=True, null=True, verbose_name="Карта пути таксиста")
+
 
     def __str__(self):
         return self.name_taxi

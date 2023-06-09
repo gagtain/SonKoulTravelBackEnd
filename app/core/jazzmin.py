@@ -6,7 +6,7 @@ JAZZMIN_SETTINGS = {
     # "site_logo": "/assets/icons/admin_logo.png",
     "site_icon": '/assets/icons/admin_logo.png',
     "welcome_sign": "Добро пожаловать в панель администратора сайта SonKoul Travel !",
-    "copyright": "Pofse",
+    "copyright": "POfse.dev",
     "search_model": "auth.User",
     "user_avatar": 'None',
     "topmenu_links": [

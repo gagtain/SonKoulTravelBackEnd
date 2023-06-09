@@ -11,6 +11,7 @@ from datetime import timedelta
 from django.utils import timezone
 from rest_framework.pagination import PageNumberPagination
 
+from .compress_image import compress_image
 from .models import (
     CommentView,
 )
@@ -24,8 +25,8 @@ from .serializers import (
 class CommentViewViewSet(viewsets.ModelViewSet):
     queryset = CommentView.objects.all()
     serializer_class = CommentViewSerializer
-    ordering = ['created_at']
-    ordering_fields = ['-created_at', 'rating']
+    ordering = ['date']
+    ordering_fields = ['-date', 'stars']
     allowed_actions = ['create', 'list', 'retrieve']
 
     def get_permissions(self):
@@ -34,6 +35,11 @@ class CommentViewViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+        image = self.request.data.get('photos')  # Получите изображение из запроса
+        compressed_image = compress_image(image)  # Сжать изображение
+        serializer.save(image=compressed_image)
 
     def list(self, request, *args, **kwargs):
         if not request.user.is_staff:  # Проверяем, является ли пользователь администратором

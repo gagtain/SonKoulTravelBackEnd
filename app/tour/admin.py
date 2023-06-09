@@ -43,6 +43,11 @@ class PriceDetailsInline(admin.TabularInline):
     extra = 0
 
 
+class PhotoInline(admin.StackedInline):
+    model = Photo
+    extra = 1
+
+
 @admin.register(TourAdd)
 class TourAdmin(admin.ModelAdmin):
     model = TourAdd
@@ -52,6 +57,7 @@ class TourAdmin(admin.ModelAdmin):
         TipsInline,
         TourDatesInline,
         PriceDetailsInline,
+        PhotoInline,
     )
 
 

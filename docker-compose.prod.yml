@@ -12,6 +12,7 @@ services:
       - web
 
   web:
+    user: "root"
     build:
       context: ./app
       dockerfile: Dockerfile.prod

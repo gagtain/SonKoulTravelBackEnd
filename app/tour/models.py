@@ -30,14 +30,27 @@ class TourProgram(models.Model):
     TRANSPORT_CHOICES = ((BY_CAR, 'Машина'),
                          (BY_HORSE, 'Лошадь'),
                          (BY_WALK, 'Пешком'))
+    """Типы локаций"""
+    PLACE_SQUAD = '1'
+    LUNCH = '2'
+    SLEEPING_TIME = '3'
+    TYPE_LOCATION_CHOICES = (
+        (PLACE_SQUAD, 'Место сбора'),
+        (LUNCH, 'Обед'),
+        (SLEEPING_TIME, 'Время сна'),
+    )
     how_day = models.IntegerField(verbose_name="номер дня")
+
     location_first = models.CharField(max_length=100, verbose_name="Первая локация")
+    type_location_first = models.CharField(max_length=100, choices=TYPE_LOCATION_CHOICES, verbose_name="Тип первой локации")
     first_transport_duration = models.CharField(max_length=100, verbose_name="Длительность первой поездки")
     first_transport_type = models.CharField(max_length=100, choices=TRANSPORT_CHOICES, verbose_name="Тип траспорта")
     location_second = models.CharField(max_length=100, verbose_name="Вторая локация")
+    type_location_second = models.CharField(max_length=100, choices=TYPE_LOCATION_CHOICES, verbose_name="Тип второй локации")
     second_transport_duration = models.CharField(max_length=100, verbose_name="Длительность второй поездки")
     second_transport_type = models.CharField(max_length=100, choices=TRANSPORT_CHOICES, verbose_name="Тип транспорта")
     location_third = models.CharField(max_length=100, verbose_name="Третья локация")
+    type_location_third = models.CharField(max_length=100, choices=TYPE_LOCATION_CHOICES, verbose_name="Тип третьей локации")
     title = models.CharField(max_length=100, verbose_name="Заголовок")
     description = models.TextField(verbose_name="Описание")
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, verbose_name="Тур", related_name="programs")
@@ -52,30 +65,11 @@ class TourProgram(models.Model):
 
 
 class Price(models.Model):
-    tour = models.OneToOneField(TourAdd, on_delete=models.CASCADE, related_name="prices", verbose_name="Ценовые включения")
+    tour = models.OneToOneField(TourAdd, on_delete=models.CASCADE, related_name="prices",
+                                verbose_name="Ценовые включения")
     price_includes = models.CharField(max_length=100)
-    price_includes_2 = models.CharField(max_length=100, blank=True, null=True)
-    price_includes_3 = models.CharField(max_length=100, blank=True, null=True)
-    price_includes_4 = models.CharField(max_length=100, blank=True, null=True)
-    price_includes_5 = models.CharField(max_length=100, blank=True, null=True)
-    price_includes_6 = models.CharField(max_length=100, blank=True, null=True)
-    price_includes_7 = models.CharField(max_length=100, blank=True, null=True)
-    price_includes_8 = models.CharField(max_length=100, blank=True, null=True)
-    price_includes_9 = models.CharField(max_length=100, blank=True, null=True)
-    price_includes_10 = models.CharField(max_length=100, blank=True, null=True)
-
     """Что не входит в стоимость"""
-
     price_not_includes = models.CharField(max_length=100)
-    price_not_includes_2 = models.CharField(max_length=100, blank=True, null=True)
-    price_not_includes_3 = models.CharField(max_length=100, blank=True, null=True)
-    price_not_includes_4 = models.CharField(max_length=100, blank=True, null=True)
-    price_not_includes_5 = models.CharField(max_length=100, blank=True, null=True)
-    price_not_includes_6 = models.CharField(max_length=100, blank=True, null=True)
-    price_not_includes_7 = models.CharField(max_length=100, blank=True, null=True)
-    price_not_includes_8 = models.CharField(max_length=100, blank=True, null=True)
-    price_not_includes_9 = models.CharField(max_length=100, blank=True, null=True)
-    price_not_includes_10 = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.price_includes
@@ -90,32 +84,24 @@ class PriceDetails(models.Model):
     in_com = models.IntegerField(blank=True, null=True, verbose_name="Общая цена: ")
     per_person = models.IntegerField(blank=True, null=True, verbose_name="Цена за одного человека: ")
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, verbose_name="Тур", related_name="price_details")
+
     def __str__(self):
         return str(self.per_person)
+
+    def save(
+        self, force_insert=False, force_update=False, using=None, update_fields=None
+    ):
+        self.in_com = self.per_person * self.person
+        super().save(force_insert, force_update, using, update_fields)
 
     class Meta:
         verbose_name = "Цена: "
         verbose_name_plural = "Цены: "
 
 
-
 class Tips(models.Model):
     tittle = models.CharField(max_length=100, verbose_name="Заголовок")
     what_to_bring = models.CharField(max_length=100, verbose_name="Список")
-    what_to_bring_2 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
-    what_to_bring_3 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
-    what_to_bring_4 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
-    what_to_bring_5 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
-    what_to_bring_6 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
-    what_to_bring_7 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
-    what_to_bring_8 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
-    what_to_bring_9 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
-    what_to_bring_10 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
-    what_to_bring_11 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
-    what_to_bring_12 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
-    what_to_bring_13 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
-    what_to_bring_14 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
-    what_to_bring_15 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Список")
     tittle_2 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Заголовок 2")
     description = models.TextField(verbose_name="Описание")
     tour = models.OneToOneField(TourAdd, on_delete=models.Case, related_name="tips", verbose_name="Тур")
@@ -129,19 +115,30 @@ class Tips(models.Model):
 
 
 class Photo(models.Model):
-    image = models.ImageField(upload_to='media/static/images/tour_images/Photo', verbose_name="Добавить фото(обязательно)")
-    image_2 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
-    image_3 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
-    image_4 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
-    image_5 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
-    image_6 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
-    image_7 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
-    image_8 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
-    image_9 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
-    image_10 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True, verbose_name="Добавить фото(не обязательно)")
+    image = models.ImageField(upload_to='media/static/images/tour_images/Photo',
+                              verbose_name="Добавить фото(обязательно)")
+    image_2 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+                                verbose_name="Добавить фото(не обязательно)")
+    image_3 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+                                verbose_name="Добавить фото(не обязательно)")
+    image_4 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+                                verbose_name="Добавить фото(не обязательно)")
+    image_5 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+                                verbose_name="Добавить фото(не обязательно)")
+    image_6 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+                                verbose_name="Добавить фото(не обязательно)")
+    image_7 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+                                verbose_name="Добавить фото(не обязательно)")
+    image_8 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+                                verbose_name="Добавить фото(не обязательно)")
+    image_9 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+                                verbose_name="Добавить фото(не обязательно)")
+    image_10 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+                                 verbose_name="Добавить фото(не обязательно)")
     tour = models.OneToOneField(TourAdd, on_delete=models.CASCADE, verbose_name="Тур", related_name="photos")
+
     def __str__(self):
-        return self.image
+        return self.tour.name
 
     class Meta:
         verbose_name = "Добавить фото"
@@ -183,7 +180,7 @@ class BookingPrivateTour(models.Model):
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, related_name="private_bookings")
 
     def __str__(self):
-         return self.name + self.email_or_whatsapp + f" - {self.date} - {self.date_up_to}"
+        return self.name + self.email_or_whatsapp + f" - {self.date} - {self.date_up_to}"
 
     class Meta:
         verbose_name = "Бронирование приватного тура"
