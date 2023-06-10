@@ -150,13 +150,22 @@ class TourProgramViewSet(viewsets.ModelViewSet):
     permission_classes = [IsSuperuser | permissions.IsAuthenticatedOrReadOnly]
 
     def create(self, request):
+        tour_id = request.data.get('tour')
+        try:
+            tour = TourAdd.objects.get(pk=tour_id)
+        except TourAdd.DoesNotExist:
+            response_400 = {
+                "message": "Tour not found",
+            }
+            return Response(response_400, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = TourProgramSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            responce_201 = {
+            serializer.save(tour=tour)
+            response_201 = {
                 "message": "Program added successfully",
             }
-            return Response(responce_201, status=status.HTTP_201_CREATED)
+            return Response(response_201, status=status.HTTP_201_CREATED)
         response_400 = {
             "message": "Program not added",
         }

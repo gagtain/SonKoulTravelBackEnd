@@ -7,17 +7,23 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework import mixins, viewsets, status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from datetime import timedelta
 from django.utils import timezone
 from rest_framework.pagination import PageNumberPagination
 
 from .compress_image import compress_image
+from .filters import CommentFilter
 from .models import (
     CommentView,
+    Photo
+
 )
 
 from .serializers import (
     CommentViewSerializer,
+    PhotoSerializer
 
 )
 
@@ -25,8 +31,9 @@ from .serializers import (
 class CommentViewViewSet(viewsets.ModelViewSet):
     queryset = CommentView.objects.all()
     serializer_class = CommentViewSerializer
-    ordering = ['date']
-    ordering_fields = ['-date', 'stars']
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = CommentFilter
+    ordering_fields = ['date', 'stars']
     allowed_actions = ['create', 'list', 'retrieve']
 
     def get_permissions(self):
@@ -95,3 +102,8 @@ class CommentViewViewSet(viewsets.ModelViewSet):
             "message": "Insufficient permissions! Only admins can delete comments."
         }
         return Response(response_403, status=status.HTTP_403_FORBIDDEN)
+
+
+class PhotoViewSet(viewsets.ModelViewSet):
+    queryset = Photo.objects.all()
+    serializer_class = PhotoSerializer
