@@ -72,7 +72,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            "C:/Users/Artur/PycharmProjects/SonKoulTravelBackEnd/templates",
+            "C:/Users/thepr/PycharmProjects/SonKoulTravelBackEnd/app/templates/",
         ],
         "APP_DIRS": True,
         "OPTIONS": {

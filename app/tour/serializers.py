@@ -12,6 +12,7 @@ from .models import (
     TourDates,
     BookingPrivateTour,
     BookingGroupTour, PriceDetails,
+    Location
 )
 
 
@@ -34,15 +35,37 @@ class TourAddSerializer(serializers.ModelSerializer):
         return data
 
 
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = ['name_location', 'type', 'description_location']
+
+
 class TourProgramSerializer(serializers.ModelSerializer):
+    locations = serializers.SerializerMethodField()
+
     class Meta:
         model = TourProgram
         fields = '__all__'
 
+    def get_locations(self, instance):
+        locations_data = []
+        for location in instance.locations.all():
+            location_data = LocationSerializer(location).data
+            location_data['nextTransport'] = {
+                'time': instance.transport,
+                'type': instance.type_of_transport
+            }
+            locations_data.append(location_data)
+        return locations_data
+
     def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data['tour'] = instance.tour.name
-        return data
+        return {
+            'id': instance.id,
+            'name': instance.title,
+            'day': instance.how_day,
+            'locations': self.get_locations(instance)
+        }
 
 
 class PriceSerializer(serializers.ModelSerializer):
@@ -182,7 +205,7 @@ class PriceDetailsSerializer(serializers.ModelSerializer):
 
 
 class TourDetailSerializer(serializers.ModelSerializer):
-    tour_program = TourProgramSerializer(many=True, read_only=True)
+    tour_program = TourProgramSerializer(read_only=True, many=True)
     prices = PriceSerializer(read_only=True)
     price_details = PriceDetailsSerializer(many=True, read_only=True)
     tips = TipsSerializer(read_only=True)

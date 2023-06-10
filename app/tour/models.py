@@ -24,36 +24,12 @@ class TourAdd(models.Model):
 
 
 class TourProgram(models.Model):
-    BY_CAR = '1'
-    BY_WALK = '2'
-    BY_HORSE = '3'
-    TRANSPORT_CHOICES = ((BY_CAR, 'Машина'),
-                         (BY_HORSE, 'Лошадь'),
-                         (BY_WALK, 'Пешком'))
-    """Типы локаций"""
-    PLACE_SQUAD = '1'
-    LUNCH = '2'
-    SLEEPING_TIME = '3'
-    TYPE_LOCATION_CHOICES = (
-        (PLACE_SQUAD, 'Место сбора'),
-        (LUNCH, 'Обед'),
-        (SLEEPING_TIME, 'Время сна'),
-    )
     how_day = models.IntegerField(verbose_name="номер дня")
-
-    location_first = models.CharField(max_length=100, verbose_name="Первая локация")
-    type_location_first = models.CharField(max_length=100, choices=TYPE_LOCATION_CHOICES, verbose_name="Тип первой локации")
-    first_transport_duration = models.CharField(max_length=100, verbose_name="Длительность первой поездки")
-    first_transport_type = models.CharField(max_length=100, choices=TRANSPORT_CHOICES, verbose_name="Тип траспорта")
-    location_second = models.CharField(max_length=100, verbose_name="Вторая локация")
-    type_location_second = models.CharField(max_length=100, choices=TYPE_LOCATION_CHOICES, verbose_name="Тип второй локации")
-    second_transport_duration = models.CharField(max_length=100, verbose_name="Длительность второй поездки")
-    second_transport_type = models.CharField(max_length=100, choices=TRANSPORT_CHOICES, verbose_name="Тип транспорта")
-    location_third = models.CharField(max_length=100, verbose_name="Третья локация")
-    type_location_third = models.CharField(max_length=100, choices=TYPE_LOCATION_CHOICES, verbose_name="Тип третьей локации")
+    transport = models.CharField(max_length=100, verbose_name="Транспорт")
+    type_of_transport = models.CharField(max_length=100, verbose_name="тип транспорта")
     title = models.CharField(max_length=100, verbose_name="Заголовок")
     description = models.TextField(verbose_name="Описание")
-    tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, verbose_name="Тур", related_name="programs")
+    tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -62,6 +38,17 @@ class TourProgram(models.Model):
         verbose_name_plural = "Программы туров"
         verbose_name = "Программа тура"
         ordering = ['-how_day']
+
+
+class Location(models.Model):
+    name_location = models.CharField(max_length=100, verbose_name="Локация")
+    type = models.CharField(max_length=100, verbose_name="Тип локации")
+    description_location = models.CharField(max_length=100, verbose_name="Описание")
+    tour_program = models.ForeignKey(TourProgram, related_name='locations', on_delete=models.CASCADE, blank=True, null=True)
+    tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, verbose_name="Тур")
+
+    def __str__(self):
+        return self.name_location
 
 
 class Price(models.Model):
@@ -89,7 +76,7 @@ class PriceDetails(models.Model):
         return str(self.per_person)
 
     def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
+            self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
         self.in_com = self.per_person * self.person
         super().save(force_insert, force_update, using, update_fields)
@@ -101,9 +88,9 @@ class PriceDetails(models.Model):
 
 class Tips(models.Model):
     tittle = models.CharField(max_length=100, verbose_name="Заголовок")
-    what_to_bring = models.CharField(max_length=100, verbose_name="Список")
-    tittle_2 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Заголовок 2")
-    description = models.TextField(verbose_name="Описание")
+    what_to_bring = models.CharField(max_length=1800, verbose_name="Список")
+    tittle_2 = models.CharField(max_length=100, verbose_name="Заголовок 2")
+    description = models.TextField(verbose_name="Описание", blank=True, null=True)
     tour = models.OneToOneField(TourAdd, on_delete=models.Case, related_name="tips", verbose_name="Тур")
 
     def __str__(self):
