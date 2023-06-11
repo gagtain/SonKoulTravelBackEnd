@@ -116,6 +116,7 @@ class TipsSerializer(serializers.ModelSerializer):
 
 class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
+        ref_name = "TourPhoto"
         model = Photo
         fields = 'id'.split()
 

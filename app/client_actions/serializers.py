@@ -10,6 +10,7 @@ class BaseSerializer(serializers.ModelSerializer):
 
 class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
+        ref_name = "CommentsPhoto"
         model = Photo
         fields = ['photo']
 
