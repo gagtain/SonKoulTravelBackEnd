@@ -492,17 +492,29 @@ class BookingGroupTourViewSet(viewsets.ModelViewSet):
         try:
             name = request.data.get("name")
             contacts = request.data.get("email_or_whatsapp")
+            date_id = request.data.get("date")
+            tour_id = request.data.get("tour")
+
             if not name:
                 raise serializers.ValidationError("This field cannot be empty")
             elif not contacts:
                 raise serializers.ValidationError("This field cannot be empty")
             elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', contacts) and not re.match(r'^\+[0-9]+$', contacts):
-                raise serializers.ValidationError \
-                    ("The contact field must be in the format of email or whatsapp number")
+                raise serializers.ValidationError(
+                    "The contact field must be in the format of email or whatsapp number")
+
+            if date_id and not isinstance(date_id, int):
+                date_id = int(date_id)
+            if tour_id and not isinstance(tour_id, int):
+                tour_id = int(tour_id)
+
+            request.data["date"] = date_id
+            request.data["tour"] = tour_id
+
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
-            # Отправка данных в телеграм
+
             bot_token = '5964377497:AAEXxcJ745bQpNUpB2neHIjMMkf0IBF5mn4'
             chat_id = '860389338'
             message = f'Бронирование группового тура\n' \

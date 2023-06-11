@@ -163,8 +163,6 @@ class BookingPrivateTourSerializer(serializers.ModelSerializer):
 class BookingGroupTourSerializer(serializers.ModelSerializer):
     date_str = serializers.SerializerMethodField(read_only=True, default='None')
 
-    # email_or_whatsapp = serializers.CharField()
-
     class Meta:
         model = BookingGroupTour
         fields = 'id name email_or_whatsapp date date_str tour'.split()
