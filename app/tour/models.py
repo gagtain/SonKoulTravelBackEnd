@@ -25,10 +25,7 @@ class TourAdd(models.Model):
 
 class TourProgram(models.Model):
     how_day = models.IntegerField(verbose_name="номер дня")
-    transport = models.CharField(max_length=100, verbose_name="Транспорт")
-    type_of_transport = models.CharField(max_length=100, verbose_name="тип транспорта")
     title = models.CharField(max_length=100, verbose_name="Заголовок")
-    description = models.TextField(verbose_name="Описание")
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -43,12 +40,18 @@ class TourProgram(models.Model):
 class Location(models.Model):
     name_location = models.CharField(max_length=100, verbose_name="Локация")
     type = models.CharField(max_length=100, verbose_name="Тип локации")
-    description_location = models.CharField(max_length=100, verbose_name="Описание")
+    description_location = models.CharField(max_length=100, verbose_name="Описание", blank=True, null=True)
+    time = models.CharField(max_length=100, verbose_name="Время поездки")
+    type_of_transport = models.CharField(max_length=100, verbose_name="тип транспорта")
     tour_program = models.ForeignKey(TourProgram, related_name='locations', on_delete=models.CASCADE, blank=True, null=True)
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, verbose_name="Тур")
 
     def __str__(self):
         return self.name_location
+
+    class Meta:
+        verbose_name_plural = "Локации"
+        verbose_name = "Локация"
 
 
 class Price(models.Model):
