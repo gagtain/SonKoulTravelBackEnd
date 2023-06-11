@@ -53,8 +53,8 @@ class TourProgramSerializer(serializers.ModelSerializer):
         for location in instance.locations.all():
             location_data = LocationSerializer(location).data
             location_data['nextTransport'] = {
-                'time': instance.transport,
-                'type': instance.type_of_transport
+                'time': location.time,
+                'type': location.type_of_transport
             }
             locations_data.append(location_data)
         return locations_data
@@ -163,11 +163,9 @@ class BookingPrivateTourSerializer(serializers.ModelSerializer):
 class BookingGroupTourSerializer(serializers.ModelSerializer):
     date_str = serializers.SerializerMethodField(read_only=True, default='None')
 
-    # email_or_whatsapp = serializers.CharField()
-
     class Meta:
         model = BookingGroupTour
-        fields = 'name email_or_whatsapp date date_str tour'.split()
+        fields = 'id name email_or_whatsapp date date_str tour'.split()
 
     def get_date_str(self, instance):
         return str(instance.date)
@@ -235,3 +233,4 @@ class TourDetailSerializer(serializers.ModelSerializer):
                 images.append(image_url)
         data['images'] = images
         return data
+
