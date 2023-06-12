@@ -41,16 +41,13 @@ class CommentViewViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.IsAdminUser]
         else:
             permission_classes = [permissions.AllowAny]
-        permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]
 
-    def list(self, request, *args, **kwargs):
-        if not request.user.is_staff:  # Проверяем, является ли пользователь администратором
-            queryset = self.filter_queryset(self.get_queryset().filter(is_approved=True))
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
-        else:
-            return super().list(request, *args, **kwargs)
+    def get_queryset(self):
+        qs = CommentView.objects.all()
+        if not self.request.user.is_staff:
+            qs = qs.filter(is_approved=True)
+        return qs
 
     def create(self, request, *args, **kwargs):
         super().create(request, *args, **kwargs)
