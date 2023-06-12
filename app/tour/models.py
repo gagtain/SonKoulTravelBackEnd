@@ -179,10 +179,21 @@ class BookingGroupTour(models.Model):
 
 
 class BookingPrivateTour(models.Model):
+    HORSE_TOUR = '1'
+    WALK_TOUR = '2'
+    JEEP_TOUR = '3'
+    WINTER_TOUR = '4'
+    TYPE_CHOICES = (
+        (HORSE_TOUR, 'Конный тур'),
+        (WALK_TOUR, 'Пеший тур'),
+        (JEEP_TOUR, 'Джип тур'),
+        (WINTER_TOUR, 'Зимний тур'),
+    )
     name = models.CharField(max_length=100, blank=False, null=True, verbose_name="Имя: ")
     email_or_whatsapp = models.CharField(max_length=100, blank=False, null=True, verbose_name="Контакты: ")
     date = models.DateTimeField(verbose_name="Дата от: ")
     date_up_to = models.DateTimeField(verbose_name="Дата до: ")
+    type = models.CharField(max_length=100, verbose_name="Тип тура", null=True, blank=False)
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, related_name="private_bookings")
 
     def __str__(self):
