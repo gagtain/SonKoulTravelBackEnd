@@ -147,8 +147,8 @@ class TourDatesSerializer(serializers.ModelSerializer):
 
 
 class BookingPrivateTourSerializer(serializers.ModelSerializer):
-    date = serializers.DateTimeField(format="%d.%m.%Y")
-    date_up_to = serializers.DateTimeField(format="%d.%m.%Y")
+    date = serializers.DateField(format="%d.%m.%Y")
+    date_up_to = serializers.DateField(format="%d.%m.%Y")
 
     class Meta:
         model = BookingPrivateTour
