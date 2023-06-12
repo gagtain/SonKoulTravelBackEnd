@@ -1,10 +1,13 @@
 from PIL import Image
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
-
+from rest_framework.exceptions import ValidationError
 
 def compress_image(image):
-    img = Image.open(image)
+    try:
+        img = Image.open(image)
+    except Exception:
+        raise ValidationError("Not image provided")
     output = BytesIO()
     img.save(output, format='JPEG', quality=70)
     output.seek(0)

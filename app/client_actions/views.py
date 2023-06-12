@@ -41,12 +41,8 @@ class CommentViewViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.IsAdminUser]
         else:
             permission_classes = [permissions.AllowAny]
+        permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]
-
-    def perform_create(self, serializer):
-        image = self.request.data.get('photos')  # Получите изображение из запроса
-        compressed_image = compress_image(image)  # Сжать изображение
-        serializer.save(image=compressed_image)
 
     def list(self, request, *args, **kwargs):
         if not request.user.is_staff:  # Проверяем, является ли пользователь администратором

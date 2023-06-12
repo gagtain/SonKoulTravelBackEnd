@@ -38,11 +38,27 @@ class TourProgram(models.Model):
 
 
 class Location(models.Model):
+    LOCATION = '1'
+    FOOD = '2'
+    SLEEP = '3'
+    LOCATION_CHOICE = (
+        (LOCATION, 'Место'),
+        (FOOD, 'Питание'),
+        (SLEEP, 'Ночлег'),
+    )
+    WALK = '1'
+    HORSE = '2'
+    CAR = '3'
+    TRANSPORT_CHOICES = (
+        (WALK, 'Пешком'),
+        (HORSE, 'Лошадь'),
+        (CAR, 'Машина'),
+    )
     name_location = models.CharField(max_length=100, verbose_name="Локация")
-    type = models.CharField(max_length=100, verbose_name="Тип локации")
-    description_location = models.CharField(max_length=100, verbose_name="Описание", blank=True, null=True)
+    type = models.CharField(max_length=100, verbose_name="Тип локации", choices=LOCATION_CHOICE)
+    description_location = models.TextField(verbose_name="Описание", blank=True, null=True)
     time = models.CharField(max_length=100, verbose_name="Время поездки")
-    type_of_transport = models.CharField(max_length=100, verbose_name="тип транспорта")
+    type_of_transport = models.CharField(max_length=100, verbose_name="тип транспорта", choices=TRANSPORT_CHOICES)
     tour_program = models.ForeignKey(TourProgram, related_name='locations', on_delete=models.CASCADE, blank=True, null=True)
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, verbose_name="Тур")
 
