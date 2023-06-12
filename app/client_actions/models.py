@@ -1,4 +1,4 @@
-from typing import List
+from typing import Iterable, List, Optional
 
 from django.db import models
 
@@ -10,6 +10,10 @@ STAR_CHOICES = [
     (3, '3'),
     (4, '4'),
     (5, '5'),
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4716c94fb53bd60f6cb2913688b43c44fa81afcf
 ]
 
 

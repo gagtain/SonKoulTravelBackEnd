@@ -2,11 +2,22 @@ from django.db import models
 
 
 class TourAdd(models.Model):
+    HORSE_TOUR = '1'
+    WALK_TOUR = '2'
+    JEEP_TOUR = '3'
+    WINTER_TOUR = '4'
+    TYPE_CHOICES = (
+        (HORSE_TOUR, 'Конный тур'),
+        (WALK_TOUR, 'Пеший тур'),
+        (JEEP_TOUR, 'Джип тур'),
+        (WINTER_TOUR, 'Зимний тур'),
+    )
     name = models.CharField(max_length=100)
     tour_time = models.CharField(max_length=100)
     number_of_people = models.IntegerField()
     price = models.IntegerField()
     when_is_tour = models.CharField(max_length=100)
+    type = models.CharField(max_length=100, verbose_name="Тип тура", null=True, blank=False)
     image = models.ImageField(upload_to='tour_images')
     image_2 = models.ImageField(upload_to='tour_images', blank=True, null=True)
     image_3 = models.ImageField(upload_to='tour_images', blank=True, null=True)
@@ -38,7 +49,24 @@ class TourProgram(models.Model):
 
 
 class Location(models.Model):
+    LOCATION = '1'
+    FOOD = '2'
+    SLEEP = '3'
+    LOCATION_CHOICE = (
+        (LOCATION, 'Место'),
+        (FOOD, 'Питание'),
+        (SLEEP, 'Ночлег'),
+    )
+    WALK = '1'
+    HORSE = '2'
+    CAR = '3'
+    TRANSPORT_CHOICES = (
+        (WALK, 'Пешком'),
+        (HORSE, 'Лошадь'),
+        (CAR, 'Машина'),
+    )
     name_location = models.CharField(max_length=100, verbose_name="Локация")
+<<<<<<< HEAD
     type = models.CharField(max_length=100, verbose_name="Тип локации")
     description_location = models.TextField(max_length=100, verbose_name="Описание", blank=True, null=True)
     time = models.CharField(max_length=100, verbose_name="Время поездки")
@@ -53,6 +81,13 @@ class Location(models.Model):
     type_of_transport = models.CharField(max_length=100, choices=TYPE_OF_TRANSPORT, verbose_name="тип транспорта")
     tour_program = models.ForeignKey(TourProgram, related_name='locations', on_delete=models.CASCADE, blank=True,
                                      null=True)
+=======
+    type = models.CharField(max_length=100, verbose_name="Тип локации", choices=LOCATION_CHOICE)
+    description_location = models.TextField(verbose_name="Описание", blank=True, null=True)
+    time = models.CharField(max_length=100, verbose_name="Время поездки")
+    type_of_transport = models.CharField(max_length=100, verbose_name="тип транспорта", choices=TRANSPORT_CHOICES)
+    tour_program = models.ForeignKey(TourProgram, related_name='locations', on_delete=models.CASCADE, blank=True, null=True)
+>>>>>>> 4716c94fb53bd60f6cb2913688b43c44fa81afcf
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, verbose_name="Тур")
 
     def __str__(self):
