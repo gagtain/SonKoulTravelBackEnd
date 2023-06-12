@@ -1,19 +1,22 @@
 from rest_framework import serializers
 
 from .models import CommentView, Photo
-from .compress_image import compress_image
-
-
-class BaseSerializer(serializers.ModelSerializer):
-    read_only_fields = ('id',)
 
 
 class PhotoSerializer(serializers.ModelSerializer):
+    photo = serializers.FileField()
+
     class Meta:
         ref_name = "CommentsPhoto"
         model = Photo
-        fields = ['photo']
+        fields = '__all__'
 
+<<<<<<< HEAD
+    def create(self, validated_data):
+        return Photo.objects.create(**validated_data)
+
+=======
+>>>>>>> 4716c94fb53bd60f6cb2913688b43c44fa81afcf
 
 class CommentViewSerializer(serializers.ModelSerializer):
     photos = PhotoSerializer(many=True, required=False, read_only=True)
