@@ -66,7 +66,6 @@ class Location(models.Model):
         (CAR, 'Машина'),
     )
     name_location = models.CharField(max_length=100, verbose_name="Локация")
-<<<<<<< HEAD
     type = models.CharField(max_length=100, verbose_name="Тип локации")
     description_location = models.TextField(max_length=100, verbose_name="Описание", blank=True, null=True)
     time = models.CharField(max_length=100, verbose_name="Время поездки")
@@ -81,13 +80,6 @@ class Location(models.Model):
     type_of_transport = models.CharField(max_length=100, choices=TYPE_OF_TRANSPORT, verbose_name="тип транспорта")
     tour_program = models.ForeignKey(TourProgram, related_name='locations', on_delete=models.CASCADE, blank=True,
                                      null=True)
-=======
-    type = models.CharField(max_length=100, verbose_name="Тип локации", choices=LOCATION_CHOICE)
-    description_location = models.TextField(verbose_name="Описание", blank=True, null=True)
-    time = models.CharField(max_length=100, verbose_name="Время поездки")
-    type_of_transport = models.CharField(max_length=100, verbose_name="тип транспорта", choices=TRANSPORT_CHOICES)
-    tour_program = models.ForeignKey(TourProgram, related_name='locations', on_delete=models.CASCADE, blank=True, null=True)
->>>>>>> 4716c94fb53bd60f6cb2913688b43c44fa81afcf
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, verbose_name="Тур")
 
     def __str__(self):
