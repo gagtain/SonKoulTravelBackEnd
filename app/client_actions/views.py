@@ -3,6 +3,7 @@ import requests
 
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAdminUser
 from rest_framework import mixins, viewsets, status
 from rest_framework.permissions import IsAdminUser
@@ -42,11 +43,6 @@ class CommentViewViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]
-
-    def perform_create(self, serializer):
-        image = self.request.data.get('photos')  # Получите изображение из запроса
-        compressed_image = compress_image(image)  # Сжать изображение
-        serializer.save(image=compressed_image)
 
     def list(self, request, *args, **kwargs):
         if not request.user.is_staff:  # Проверяем, является ли пользователь администратором
@@ -107,3 +103,5 @@ class CommentViewViewSet(viewsets.ModelViewSet):
 class PhotoViewSet(viewsets.ModelViewSet):
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
+    parser_classes = [MultiPartParser]
+

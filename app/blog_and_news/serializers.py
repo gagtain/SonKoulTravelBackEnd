@@ -8,4 +8,4 @@ class BlogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BlogNews
-        fields = 'title category date_posted image content'.split()
+        fields = 'id title category date_posted image content'.split()

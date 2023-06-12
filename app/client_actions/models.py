@@ -10,12 +10,6 @@ STAR_CHOICES = [
     (3, '3'),
     (4, '4'),
     (5, '5'),
-    (6, '6'),
-    (7, '7'),
-    (8, '8'),
-    (9, '9'),
-    (10, '10'),
-
 ]
 
 
@@ -39,8 +33,8 @@ class CommentView(models.Model):
 
 
 class Photo(models.Model):
+    photo = models.ImageField(upload_to='comment_photos', verbose_name="фото")
     comment = models.ForeignKey(CommentView, related_name='photos', on_delete=models.CASCADE)
-    photo = models.ImageField(upload_to='comment_photos')
 
     def __str__(self):
         return "Фотография к комментариям"
