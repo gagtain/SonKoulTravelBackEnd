@@ -1,27 +1,22 @@
 from rest_framework import serializers
 
 from .compress_image import compress_image
-from .models import CommentView, Photo
+from .models import CommentView, PhotoComment
+from tour.serializers import TourAddSerializer
+
+import base64
 
 
 class PhotoSerializer(serializers.ModelSerializer):
-    photo = serializers.FileField()
+    photo = serializers.ImageField(required=False)
 
     class Meta:
-        ref_name = "CommentsPhoto"
-        model = Photo
-        fields = '__all__'
-
-    def create(self, validated_data):
-        return Photo.objects.create(**validated_data)
+        model = PhotoComment
+        fields = ['id', 'photo', 'comment']
 
 
 class CommentViewSerializer(serializers.ModelSerializer):
-    photos = PhotoSerializer(many=True, required=False, read_only=True)
-    upload_images = serializers.ListField(
-        child = serializers.FileField(max_length = 1000000, allow_empty_file = False, use_url = False),
-        write_only = True
-    )
+    upload_images = PhotoSerializer(many=True, required=False)
 
     class Meta:
         model = CommentView
@@ -32,12 +27,18 @@ class CommentViewSerializer(serializers.ModelSerializer):
             "id": {"required": False}
         }
 
+    def to_representation(self, instance):
+        host = self.context['request'].get_host() if self.context['request'].get_host() else None
+        data = super().to_representation(instance)
+        tour_name = instance.tour.name if instance.tour else None
+        data['tour'] = tour_name
+        data['photos'] = [f"{host}{photo.photo.url}" for photo in instance.photos.all()]
+
+        return data
+
     def create(self, validated_data):
         photos_data = validated_data.pop('upload_images', [])
-        print(f"adasda={photos_data}")
         comment = CommentView.objects.create(**validated_data)
         for photo_data in photos_data:
-            photo_data = compress_image(photo_data)
-            print(photo_data)
-            Photo.objects.create(comment=comment, photo=photo_data)
+            photo = PhotoComment.objects.create(comment=comment, **photo_data)
         return comment

@@ -9,7 +9,7 @@ from tour.models import (
     TourAdd,
     BookingGroupTour,
     BookingPrivateTour,
-    PriceDetails, Location,
+    PriceDetail, Location,
 )
 
 
@@ -43,8 +43,8 @@ class TourDatesInline(admin.StackedInline):
     extra = 0
 
 
-class PriceDetailsInline(admin.TabularInline):
-    model = PriceDetails
+class PriceDetailInline(admin.TabularInline):
+    model = PriceDetail
     extra = 0
 
 
@@ -62,11 +62,11 @@ class TourAdmin(admin.ModelAdmin):
         LocationInline,
         TipsInline,
         TourDatesInline,
-        PriceDetailsInline,
+        PriceDetailInline,
         PhotoInline,
     )
 
 
 admin.site.register(BookingGroupTour)
 admin.site.register(BookingPrivateTour)
-admin.site.register(PriceDetails, PriceDetailsAdmin)
+admin.site.register(PriceDetail, PriceDetailsAdmin)

@@ -19,7 +19,7 @@ from .serializers import (
     PhotoSerializer,
     BookingPrivateTourSerializer,
     BookingGroupTourSerializer,
-    TourDatesSerializer, PriceDetailsCreateSerializer, PriceDetailsSerializer,
+    TourDatesSerializer, PriceDetailCreateSerializer, PriceDetailSerializer,
     TourDetailSerializer,
 )
 from .models import (
@@ -30,7 +30,7 @@ from .models import (
     Photo,
     TourDates,
     BookingGroupTour,
-    BookingPrivateTour, PriceDetails,
+    BookingPrivateTour, PriceDetail,
 )
 from .filters import TourAddFilter
 
@@ -260,7 +260,7 @@ class PriceViewSet(viewsets.ModelViewSet):
 
 
 class PriceDetailsCreateViewSet(viewsets.ViewSet):
-    serializer_class = PriceDetailsCreateSerializer
+    serializer_class = PriceDetailCreateSerializer
     permission_classes = (permissions.AllowAny,)
 
     def create(self, request):
@@ -284,8 +284,8 @@ class PriceDetailsCreateViewSet(viewsets.ViewSet):
 
 
 class PriceDetailsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = PriceDetails.objects.all()
-    serializer_class = PriceDetailsSerializer
+    queryset = PriceDetail.objects.all()
+    serializer_class = PriceDetailSerializer
     permission_classes = (permissions.AllowAny,)
 
 
@@ -352,11 +352,11 @@ class PhotoViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.save()
             responce_201 = {
-                "message": "Photo added successfully",
+                "message": "PhotoComment added successfully",
             }
             return Response(responce_201, status=status.HTTP_201_CREATED)
         response_400 = {
-            "message": "Photo not added",
+            "message": "PhotoComment not added",
         }
         return Response(response_400, status=status.HTTP_400_BAD_REQUEST)
 
@@ -367,16 +367,16 @@ class PhotoViewSet(viewsets.ModelViewSet):
             if serializer.is_valid():
                 serializer.save()
                 responce_200 = {
-                    "message": "Photo updated successfully",
+                    "message": "PhotoComment updated successfully",
                 }
                 return Response(responce_200, status=status.HTTP_200_OK)
             response_400 = {
-                "message": "Photo not updated",
+                "message": "PhotoComment not updated",
             }
             return Response(response_400, status=status.HTTP_400_BAD_REQUEST)
         except Photo.DoesNotExist:
             responce_404 = {
-                "message": "Photo not found",
+                "message": "PhotoComment not found",
             }
             return Response(responce_404, status=status.HTTP_404_NOT_FOUND)
 
@@ -385,12 +385,12 @@ class PhotoViewSet(viewsets.ModelViewSet):
             photo = Photo.objects.get(pk=pk)
             photo.delete()
             responce_204 = {
-                "message": "Photo deleted successfully",
+                "message": "PhotoComment deleted successfully",
             }
             return Response(responce_204, status=status.HTTP_204_NO_CONTENT)
         except Photo.DoesNotExist:
             responce_404 = {
-                "message": "Photo not found",
+                "message": "PhotoComment not found",
             }
             return Response(responce_404, status=status.HTTP_404_NOT_FOUND)
 
