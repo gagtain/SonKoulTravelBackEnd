@@ -3,14 +3,14 @@ from django.utils.html import format_html
 
 from .models import (
     CommentView,
-    Photo
+    PhotoComment
 )
 
-admin.site.register(Photo)
+admin.site.register(PhotoComment)
 
 
 class PhotoInline(admin.TabularInline):
-    model = Photo
+    model = PhotoComment
     extra = 0
 
 

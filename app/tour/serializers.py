@@ -11,7 +11,7 @@ from .models import (
     Photo,
     TourDates,
     BookingPrivateTour,
-    BookingGroupTour, PriceDetails,
+    BookingGroupTour, PriceDetail,
     Location
 )
 
@@ -186,15 +186,17 @@ class BookingGroupTourSerializer(serializers.ModelSerializer):
     #     return value
 
 
-class PriceDetailsCreateSerializer(serializers.ModelSerializer):
+class PriceDetailCreateSerializer(serializers.ModelSerializer):
+    in_com = serializers.IntegerField(read_only=True)
+
     class Meta:
-        model = PriceDetails
+        model = PriceDetail
         fields = 'id person per_person tour'.split()
 
 
-class PriceDetailsSerializer(serializers.ModelSerializer):
+class PriceDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PriceDetails
+        model = PriceDetail
         fields = '__all__'
 
     def to_representation(self, instance):
@@ -206,7 +208,7 @@ class PriceDetailsSerializer(serializers.ModelSerializer):
 class TourDetailSerializer(serializers.ModelSerializer):
     tour_program = TourProgramSerializer(read_only=True, many=True)
     prices = PriceSerializer(read_only=True)
-    price_details = PriceDetailsSerializer(many=True, read_only=True)
+    price_details = PriceDetailSerializer(many=True, read_only=True)
     tips = TipsSerializer(read_only=True)
     photos = PhotoSerializer(read_only=True)
     tour_dates = TourDatesSerializer(many=True, read_only=True)
@@ -233,4 +235,3 @@ class TourDetailSerializer(serializers.ModelSerializer):
                 images.append(image_url)
         data['images'] = images
         return data
-

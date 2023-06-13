@@ -66,7 +66,7 @@ class Location(models.Model):
         (CAR, 'Машина'),
     )
     name_location = models.CharField(max_length=100, verbose_name="Локация")
-    type = models.CharField(max_length=100, verbose_name="Тип локации")
+    type = models.CharField(max_length=100, verbose_name="Тип локации", choices=LOCATION_CHOICE, default=LOCATION)
     description_location = models.TextField(max_length=100, verbose_name="Описание", blank=True, null=True)
     time = models.CharField(max_length=100, verbose_name="Время поездки")
     TYPE_OF_TRANSPORT = (
@@ -105,7 +105,7 @@ class Price(models.Model):
         verbose_name = "Что входит в стоимость и не входит в стоимость"
 
 
-class PriceDetails(models.Model):
+class PriceDetail(models.Model):
     person = models.IntegerField(blank=True, null=True, verbose_name="Количество человек: ")
     in_com = models.IntegerField(blank=True, null=True, verbose_name="Общая цена: ")
     per_person = models.IntegerField(blank=True, null=True, verbose_name="Цена за одного человека: ")
@@ -115,7 +115,10 @@ class PriceDetails(models.Model):
         return str(self.per_person)
 
     def save(
-            self, force_insert=False, force_update=False, using=None, update_fields=None
+            self, force_insert=False,
+            force_update=False,
+            using=None,
+            update_fields=None
     ):
         self.in_com = self.per_person * self.person
         super().save(force_insert, force_update, using, update_fields)
@@ -141,25 +144,25 @@ class Tips(models.Model):
 
 
 class Photo(models.Model):
-    image = models.ImageField(upload_to='media/static/images/tour_images/Photo',
+    image = models.ImageField(upload_to='media/static/images/tour_images/PhotoComment',
                               verbose_name="Добавить фото(обязательно)")
-    image_2 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+    image_2 = models.ImageField(upload_to='media/static/images/tour_images/PhotoComment', blank=True, null=True,
                                 verbose_name="Добавить фото(не обязательно)")
-    image_3 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+    image_3 = models.ImageField(upload_to='media/static/images/tour_images/PhotoComment', blank=True, null=True,
                                 verbose_name="Добавить фото(не обязательно)")
-    image_4 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+    image_4 = models.ImageField(upload_to='media/static/images/tour_images/PhotoComment', blank=True, null=True,
                                 verbose_name="Добавить фото(не обязательно)")
-    image_5 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+    image_5 = models.ImageField(upload_to='media/static/images/tour_images/PhotoComment', blank=True, null=True,
                                 verbose_name="Добавить фото(не обязательно)")
-    image_6 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+    image_6 = models.ImageField(upload_to='media/static/images/tour_images/PhotoComment', blank=True, null=True,
                                 verbose_name="Добавить фото(не обязательно)")
-    image_7 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+    image_7 = models.ImageField(upload_to='media/static/images/tour_images/PhotoComment', blank=True, null=True,
                                 verbose_name="Добавить фото(не обязательно)")
-    image_8 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+    image_8 = models.ImageField(upload_to='media/static/images/tour_images/PhotoComment', blank=True, null=True,
                                 verbose_name="Добавить фото(не обязательно)")
-    image_9 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+    image_9 = models.ImageField(upload_to='media/static/images/tour_images/PhotoComment', blank=True, null=True,
                                 verbose_name="Добавить фото(не обязательно)")
-    image_10 = models.ImageField(upload_to='media/static/images/tour_images/Photo', blank=True, null=True,
+    image_10 = models.ImageField(upload_to='media/static/images/tour_images/PhotoComment', blank=True, null=True,
                                  verbose_name="Добавить фото(не обязательно)")
     tour = models.OneToOneField(TourAdd, on_delete=models.CASCADE, verbose_name="Тур", related_name="photos")
 
