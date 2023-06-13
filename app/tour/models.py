@@ -17,7 +17,7 @@ class TourAdd(models.Model):
     number_of_people = models.IntegerField()
     price = models.IntegerField()
     when_is_tour = models.CharField(max_length=100)
-    type = models.CharField(max_length=100, verbose_name="Тип тура", null=True, blank=False)
+    type = models.CharField(max_length=100, verbose_name="Тип тура", choices=TYPE_CHOICES, null=True, blank=False)
     image = models.ImageField(upload_to='tour_images')
     image_2 = models.ImageField(upload_to='tour_images', blank=True, null=True)
     image_3 = models.ImageField(upload_to='tour_images', blank=True, null=True)
