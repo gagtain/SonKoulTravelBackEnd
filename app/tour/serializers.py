@@ -19,7 +19,7 @@ from .models import (
 class TourAddSerializer(serializers.ModelSerializer):
     class Meta:
         model = TourAdd
-        fields = ('id', 'name', 'tour_time', 'number_of_people', 'price', 'when_is_tour')
+        fields = ('id', 'name', 'tour_time', 'number_of_people', 'price', 'type', 'description', 'when_is_tour')
 
     def to_representation(self, instance):
         host = self.context.get('request').get_host() if self.context.get('request') else ''
@@ -27,7 +27,7 @@ class TourAddSerializer(serializers.ModelSerializer):
         images = [f"{host}{instance.image.url}"]
         for i in range(2, 7):
             image_key = f'image_{i}'
-            image_instance = getattr(instance, image_key)
+            image_instance = getattr(instance, imag_key)
             if image_instance:
                 image_url = f"{host}{image_instance.url}"
                 images.append(image_url)
@@ -227,7 +227,7 @@ class TourDetailSerializer(serializers.ModelSerializer):
         photos_serializer.context.update(context)
         data = super().to_representation(instance)
         images = [f"{host}{instance.image.url}"]
-        for i in range(2, 7):
+        for i in range(1, 7):
             image_key = f'image_{i}'
             image_instance = getattr(instance, image_key)
             if image_instance:

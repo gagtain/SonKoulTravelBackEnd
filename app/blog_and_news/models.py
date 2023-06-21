@@ -18,3 +18,18 @@ class BlogNews(models.Model):
     class Meta:
         verbose_name_plural = 'Добавить посты или новости'
         verbose_name = 'Добавить пост или новость'
+
+
+class Slides(models.Model):
+    slides = models.ImageField(upload_to='slides_images', blank=False, null=False, verbose_name="Изображение")
+    blogs = models.ForeignKey(BlogNews, on_delete=models.CASCADE, verbose_name="Блог новостей", related_name="slides",
+                              blank=False, null=False)
+
+    def __str__(self) -> str:
+        return str(self.slides)
+
+    class Meta:
+        verbose_name_plural = 'Добавить слайды'
+        verbose_name = 'Добавить слайд'
+        db_table = 'slides'
+

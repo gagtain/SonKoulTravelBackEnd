@@ -147,6 +147,13 @@ USE_I18N = True
 
 USE_TZ = True
 
+SUMMERNOTE_CONFIG = {
+    'summernote': {
+        'callbacks': {
+            'onImageUpload': 'core.summernote_custom.upload_image'
+        }
+    }
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
