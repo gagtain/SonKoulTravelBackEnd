@@ -5,7 +5,7 @@ from rest_framework.exceptions import ValidationError
 
 def compress_image(image):
     try:
-        img = Image.open(image)
+        img = Image.open(image).convert('RGB')
     except Exception:
         raise ValidationError("Not image provided")
     output = BytesIO()

@@ -35,8 +35,9 @@ class CommentViewViewSet(viewsets.ModelViewSet):
     serializer_class = CommentViewSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = CommentFilter
-    ordering_fields = ['date', 'stars']
+    ordering_fields = ['-date', 'stars']
     allowed_actions = ['create', 'list', 'retrieve']
+
 
     # Add pagination class
     pagination_class = LimitOffsetPagination
