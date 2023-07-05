@@ -1,11 +1,11 @@
 JAZZMIN_SETTINGS = {
-    "site_title": "SonKoul Travel",
-    "site_header": "SonKoul Travel",
-    "site_brand": "SonKoul Admin",
+    "site_title": "School Admin Panel",
+    "site_header": "School Admin Panel",
+    "site_brand": "School Admin",
     "site_logo_classes": "img-circle",
     # "site_logo": "/assets/icons/admin_logo.png",
     "site_icon": '/assets/icons/admin_logo.png',
-    "welcome_sign": "Добро пожаловать в панель администратора сайта SonKoul Travel !",
+    "welcome_sign": "Добро пожаловать в панель администратора School Admin Panel!",
     "copyright": "POfse.dev",
     "search_model": "auth.User",
     "user_avatar": 'None',
@@ -29,7 +29,7 @@ JAZZMIN_SETTINGS = {
         "main_page": "fas fa-home",
         "client_actions": "fas fa-comments",
         "blog_and_news": "fas fa-newspaper",
-        
+
     },
 
     "order_with_respect_to": [

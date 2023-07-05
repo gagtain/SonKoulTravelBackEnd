@@ -1,6 +1,12 @@
 version: '3.3'
 
 services:
+  ararat:
+    build: ./front
+    ports:
+      - "3000:3000"
+    hostname: ararat
+
   nginx:
     build: ./nginx
     volumes:
@@ -39,4 +45,3 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
-
