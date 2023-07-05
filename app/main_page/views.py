@@ -4,8 +4,8 @@ from rest_framework.response import Response
 import time
 from functools import wraps
 
-from .models import FormQuestion
-from .serializers import FormQuestionSerializer
+from .models import FormQuestion, OurTeam
+from .serializers import FormQuestionSerializer, OurTeamSerializer
 
 
 def limit_rate(num_requests, period):
@@ -63,3 +63,35 @@ class FormQuestionViewSet(viewsets.ModelViewSet):
             }
 
             return Response(responce_400, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OurTeamViewSet(viewsets.ModelViewSet):
+    queryset = OurTeam.objects.all()
+    serializer_class = OurTeamSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            headers = self.get_success_headers(serializer.data)
+            responce_201 = {
+                "message": "Employee has been successfully created!",
+            }
+            return Response(responce_201, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

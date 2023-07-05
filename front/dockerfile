@@ -1,0 +1,16 @@
+FROM node:18.16.0
+
+WORKDIR /front
+
+COPY ./son-kol-front .
+
+CMD npm install
+
+CMD npm run build
+
+COPY ./son-kol-front/dist .
+
+CMD npx serve
+
+
+
