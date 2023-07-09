@@ -5,7 +5,6 @@ import starActive from "../../assets/images/common/star-active.svg";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { months } from "../../uttilities";
 import { API_URL } from "../../http";
-import reviews from "../../pages/reviews";
 // @ts-ignore
 
 const Card: React.FC<IReview> = ({ name, stars, text, photos, date }) => {
@@ -63,7 +62,7 @@ const Card: React.FC<IReview> = ({ name, stars, text, photos, date }) => {
               .join("")
           ]
         }{" "}
-        {months[reviews.data.month - 1]} {reviews.date.day}, {reviews.date.year}
+        {date.day}, {date.year}
       </span>
     </div>
   );
