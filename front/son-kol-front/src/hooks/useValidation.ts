@@ -32,7 +32,7 @@ export const useValidation = (value: string, validations: IValidations) => {
         case "minLength":
           if (value.length < validations[validation]) {
             setMinLengthError(true);
-            setErrorMsg("Некорректная длина!");
+            setErrorMsg("Incorrect length!");
           } else {
             setMinLengthError(false);
           }
@@ -42,7 +42,7 @@ export const useValidation = (value: string, validations: IValidations) => {
             setEmpty(false);
           } else {
             setEmpty(true);
-            setErrorMsg("Поле не может быть пустым!");
+            setErrorMsg("The field cannot be empty!");
             break outer;
           }
           break;
@@ -53,13 +53,13 @@ export const useValidation = (value: string, validations: IValidations) => {
             setEmailError(false);
           } else {
             setEmailError(true);
-            setErrorMsg("Некорректный email!");
+            setErrorMsg("Incorrect email!");
           }
           break;
         case "confirmTo":
           if (value !== validations[validation]) {
             setConfirmError(true);
-            setErrorMsg("Неккоректное подтверэжение пароля");
+            setErrorMsg("Incorrect confirmation");
           } else {
             setConfirmError(false);
           }
