@@ -4,8 +4,10 @@ from rest_framework.response import Response
 import time
 from functools import wraps
 
-from .models import FormQuestion, OurTeam
-from .serializers import FormQuestionSerializer, OurTeamSerializer
+from rest_framework.viewsets import ModelViewSet
+
+from .models import FormQuestion, OurTeam, QuestionList
+from .serializers import FormQuestionSerializer, OurTeamSerializer, QuestionListSerializer
 
 
 def limit_rate(num_requests, period):
@@ -94,4 +96,9 @@ class OurTeamViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class QuestionListViewSet(viewsets.ModelViewSet):
+    queryset = QuestionList.objects.all()
+    serializer_class = QuestionListSerializer
 

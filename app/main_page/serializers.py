@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import FormQuestion, OurTeam
+from .models import FormQuestion, OurTeam, QuestionList
 
 
 class FormQuestionSerializer(serializers.ModelSerializer):
@@ -14,6 +14,12 @@ class FormQuestionSerializer(serializers.ModelSerializer):
 class OurTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = OurTeam
+        fields = '__all__'
+
+
+class QuestionListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionList
         fields = '__all__'
 
 
