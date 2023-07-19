@@ -15,7 +15,8 @@ class TourAdd(models.Model):
     name = models.CharField(max_length=100)
     tour_time = models.CharField(max_length=100)
     number_of_people = models.IntegerField()
-    tour_program = models.ForeignKey('TourProgram', on_delete=models.CASCADE, verbose_name="Программа тура")
+    tour_program = models.ManyToManyField('TourProgram', verbose_name="Программа тура", blank=True, null=True,
+                                          related_name='tour_program')
     price = models.IntegerField()
     when_is_tour = models.CharField(max_length=100)
     type = models.CharField(max_length=100, verbose_name="Тип тура", null=True, blank=False)
