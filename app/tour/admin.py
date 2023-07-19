@@ -10,6 +10,7 @@ from tour.models import (
     BookingGroupTour,
     BookingPrivateTour,
     PriceDetail, Location,
+    TourProgramDay
 )
 
 
@@ -70,3 +71,4 @@ class TourAdmin(admin.ModelAdmin):
 admin.site.register(BookingGroupTour)
 admin.site.register(BookingPrivateTour)
 admin.site.register(PriceDetail, PriceDetailsAdmin)
+admin.site.register(TourProgramDay)
