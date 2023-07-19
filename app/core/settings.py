@@ -171,4 +171,4 @@ MEDIA_ROOT = 'app/media/'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-from .jazzmin import JAZZMIN_SETTINGS
+# from .jazzmin import JAZZMIN_SETTINGS
