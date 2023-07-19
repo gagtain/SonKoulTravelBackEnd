@@ -17,7 +17,8 @@ class TourAddSerializer(serializers.ModelSerializer):
     class Meta:
         model = TourAdd
         fields = (
-        'id', 'name', 'tour_time', 'number_of_people', 'price', 'type', 'description', 'when_is_tour', 'tour_program')
+            'id', 'name', 'tour_time', 'number_of_people', 'price', 'type', 'description', 'when_is_tour',
+            'tour_program')
 
     def to_representation(self, instance):
         host = self.context.get('request').get_host() if self.context.get('request') else ''
@@ -40,37 +41,35 @@ class LocationSerializer(serializers.ModelSerializer):
 
 
 class TourProgramSerializer(serializers.ModelSerializer):
-    locations = serializers.SerializerMethodField()
+    # locations = serializers.SerializerMethodField()
 
     class Meta:
         model = TourProgram
         fields = '__all__'
 
-    def get_locations(self, instance):
-        locations_data = []
-        for location in instance.locations.all():
-            location_data = LocationSerializer(location).data
-            location_data['nextTransport'] = {
-                'time': location.time,
-                'type': location.type_of_transport
-            }
-            locations_data.append(location_data)
-        return locations_data
+    # def get_locations(self, instance):
+    #     locations_data = []
+    #     for location in instance.locations.all():
+    #         location_data = LocationSerializer(location).data
+    #         location_data['nextTransport'] = {
+    #             'time': location.time,
+    #             'type': location.type_of_transport
+    #         }
+    #         locations_data.append(location_data)
+    #     return locations_data
+
+
+class TourProgramDaySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TourProgramDay
+        fields = '__all__'
 
     def to_representation(self, instance):
         return {
             'id': instance.id,
             'name': instance.title,
             'day': instance.how_day,
-            'locations': self.get_locations(instance)
         }
-
-
-class TourProgramDaySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = TourProgramDay
-        fields = '__all__'
 
 
 class PriceSerializer(serializers.ModelSerializer):
