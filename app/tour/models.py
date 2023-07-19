@@ -44,13 +44,17 @@ class TourProgram(models.Model):
     class Meta:
         verbose_name_plural = "Программы туров"
         verbose_name = "Программа тура"
-        ordering = ['-how_day']
 
 
 class TourProgramDay(models.Model):
     how_day = models.IntegerField(verbose_name="номер дня")
     title = models.CharField(max_length=100, verbose_name="Заголовок")
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "Программы туров"
+        verbose_name = "Программа тура"
+        ordering = ['-how_day']
 
 
 
