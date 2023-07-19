@@ -39,6 +39,7 @@ class TourAdd(models.Model):
 
 class TourProgram(models.Model):
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100, verbose_name="Заголовок")
     day_list = models.ManyToManyField('TourProgramDay', related_name="adekvatniy_name")
 
     class Meta:

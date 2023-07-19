@@ -41,22 +41,15 @@ class LocationSerializer(serializers.ModelSerializer):
 
 
 class TourProgramSerializer(serializers.ModelSerializer):
-    # locations = serializers.SerializerMethodField()
-
     class Meta:
         model = TourProgram
         fields = '__all__'
 
-    # def get_locations(self, instance):
-    #     locations_data = []
-    #     for location in instance.locations.all():
-    #         location_data = LocationSerializer(location).data
-    #         location_data['nextTransport'] = {
-    #             'time': location.time,
-    #             'type': location.type_of_transport
-    #         }
-    #         locations_data.append(location_data)
-    #     return locations_data
+    def to_representation(self, instance):
+        return {
+            'id': instance.id,
+            'name': instance.title,
+        }
 
 
 class TourProgramDaySerializer(serializers.ModelSerializer):
