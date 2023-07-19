@@ -20,7 +20,7 @@ from .serializers import (
     BookingPrivateTourSerializer,
     BookingGroupTourSerializer,
     TourDatesSerializer, PriceDetailCreateSerializer, PriceDetailSerializer,
-    TourDetailSerializer,
+    TourDetailSerializer, TourProgramDaySerializer,
 )
 from .models import (
     TourAdd,
@@ -148,6 +148,27 @@ class TourProgramViewSet(viewsets.ModelViewSet):
     queryset = TourProgram.objects.all()
     serializer_class = TourProgramSerializer
     permission_classes = [IsSuperuser | permissions.IsAuthenticatedOrReadOnly]
+
+    def list(self, request, *args, **kwargs):
+        list_1 = [
+
+        ]
+        queryset = TourAdd.objects.get(
+            tour__id = request.query_params.get('tour')
+        )
+        try:
+            for i in queryset.tour_program.all():
+                for n in i.day_list.all():
+                    list_1.append(n)
+            serializer = TourProgramDaySerializer(data=list_1, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            errors = {
+                "message": str(e),
+                "data": list_1
+            }
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request):
         tour_id = request.data.get('tour')

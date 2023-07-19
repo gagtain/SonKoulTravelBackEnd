@@ -9,14 +9,15 @@ from .models import (
     TourDates,
     BookingPrivateTour,
     BookingGroupTour, PriceDetail,
-    Location
+    Location, TourProgramDay
 )
 
 
 class TourAddSerializer(serializers.ModelSerializer):
     class Meta:
         model = TourAdd
-        fields = ('id', 'name', 'tour_time', 'number_of_people', 'price', 'type', 'description', 'when_is_tour', 'tour_program')
+        fields = (
+        'id', 'name', 'tour_time', 'number_of_people', 'price', 'type', 'description', 'when_is_tour', 'tour_program')
 
     def to_representation(self, instance):
         host = self.context.get('request').get_host() if self.context.get('request') else ''
@@ -63,6 +64,13 @@ class TourProgramSerializer(serializers.ModelSerializer):
             'day': instance.how_day,
             'locations': self.get_locations(instance)
         }
+
+
+class TourProgramDaySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TourProgramDay
+        fields = '__all__'
 
 
 class PriceSerializer(serializers.ModelSerializer):
