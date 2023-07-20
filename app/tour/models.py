@@ -51,7 +51,7 @@ class TourProgramDay(models.Model):
     how_day = models.IntegerField(verbose_name="номер дня")
     title = models.CharField(max_length=100, verbose_name="Заголовок")
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE)
-    locations = models.ForeignKey('Location', on_delete=models.CASCADE, null=True)
+    locations = models.ForeignKey('Location', on_delete=models.CASCADE, null=True, blank=True)
     class Meta:
         verbose_name_plural = "Программы туров"
         verbose_name = "Программа тура"
