@@ -161,9 +161,8 @@ class TourProgramViewSet(viewsets.ModelViewSet):
             for i in queryset.tour_program.all():
                 for n in i.day_list.all().order_by('how_day'):
                     list_1.append(n)
-            print(list_1)
             serializer = TourProgramDaySerializer(instance=list_1, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.initial_data, status=status.HTTP_200_OK)
 
         except Exception as e:
             errors = {
