@@ -6,7 +6,6 @@ COPY ./son-kol-front .
 
 CMD npm install
 
-CMD npm run build
 
 COPY ./son-kol-front/dist .
 
