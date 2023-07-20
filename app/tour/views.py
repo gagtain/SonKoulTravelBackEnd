@@ -1,5 +1,5 @@
 import re
-
+from django.db.models import QuerySet
 import requests
 from django.db.migrations import serializer
 from django.http import HttpResponse
@@ -151,17 +151,18 @@ class TourProgramViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         list_1 = [
-
+            
         ]
         queryset = TourAdd.objects.get(
             id = request.GET.get('tour')
         )
-        print(queryset.tour_program.all())
         try:
             for i in queryset.tour_program.all():
                 for n in i.day_list.all().order_by('how_day'):
                     list_1.append(n)
-            serializer = TourProgramDaySerializer(instance=list_1, many=True)
+                    
+            serializer = TourProgramDaySerializer(list_1, many=True)
+            
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Exception as e:

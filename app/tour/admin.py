@@ -10,7 +10,8 @@ from tour.models import (
     BookingGroupTour,
     BookingPrivateTour,
     PriceDetail, Location,
-    TourProgramDay
+    TourProgramDay,
+    NextTransport
 )
 
 
@@ -72,3 +73,5 @@ admin.site.register(BookingGroupTour)
 admin.site.register(BookingPrivateTour)
 admin.site.register(PriceDetail, PriceDetailsAdmin)
 admin.site.register(TourProgramDay)
+admin.site.register(NextTransport)
+admin.site.register(Location)

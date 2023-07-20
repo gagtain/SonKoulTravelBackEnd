@@ -9,7 +9,8 @@ from .models import (
     TourDates,
     BookingPrivateTour,
     BookingGroupTour, PriceDetail,
-    Location, TourProgramDay
+    Location, TourProgramDay,
+    NextTransport
 )
 
 
@@ -52,13 +53,26 @@ class TourProgramSerializer(serializers.ModelSerializer):
         }
 
 
+class NextTransportSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = NextTransport
+        fields = ['time', 'type']
+
+class LocationsSerializers(serializers.ModelSerializer):
+    nextTransport = NextTransportSerializer()
+    class Meta:
+        model = Location
+        fields = ['id','name_location', 'type', 'description_location', 'nextTransport']
+
 class TourProgramDaySerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='title')
     day = serializers.IntegerField(source='how_day')
+    locations = LocationsSerializers(many=True)
+    
     class Meta:
         model = TourProgramDay
-        depth = 2
-        fields = ['id', 'name', 'day', 'title']
+        fields = ['id', 'name', 'day', 'locations']
 
 
 

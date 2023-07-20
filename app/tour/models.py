@@ -51,7 +51,7 @@ class TourProgramDay(models.Model):
     how_day = models.IntegerField(verbose_name="номер дня")
     title = models.CharField(max_length=100, verbose_name="Заголовок")
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE)
-    locations = models.ForeignKey('Location', on_delete=models.CASCADE, null=True, blank=True)
+    locations = models.ManyToManyField('Location', null=True, blank=True)
     class Meta:
         verbose_name_plural = "Программы туров"
         verbose_name = "Программа тура"
@@ -59,7 +59,24 @@ class TourProgramDay(models.Model):
 
 
 
+class NextTransport(models.Model):
+
+    class TypeChooise(models.TextChoices):
+        walk = 'Пешком'
+        horse = 'Лошадь'
+        car = 'Машина'
+
+
+    time = models.CharField(max_length=100)
+    type = models.CharField(choices=TypeChooise.choices, max_length=100)
+
+
 class Location(models.Model):
+    class TypeChooise(models.TextChoices):
+        location = 'Место'
+        food = 'Питание'
+        sleep = 'Ночлег'
+    """Следующие атрибуты необходимо в будущем удалить"""
     LOCATION = '1'
     FOOD = '2'
     SLEEP = '3'
@@ -76,10 +93,6 @@ class Location(models.Model):
         (HORSE, 'Лошадь'),
         (CAR, 'Машина'),
     )
-    name_location = models.CharField(max_length=100, verbose_name="Локация")
-    type = models.CharField(max_length=100, verbose_name="Тип локации", choices=LOCATION_CHOICE, default=LOCATION)
-    description_location = models.TextField(max_length=100, verbose_name="Описание", blank=True, null=True)
-    time = models.CharField(max_length=100, verbose_name="Время поездки")
     TYPE_OF_TRANSPORT = (
         ('car', 'car'),
         ('horse', 'horse'),
@@ -88,7 +101,12 @@ class Location(models.Model):
         ('На машине', 'На машине'),
         ('Верхом', 'Верхом'),
     )
-    type_of_transport = models.CharField(max_length=100, choices=TYPE_OF_TRANSPORT, verbose_name="тип транспорта")
+    name_location = models.CharField(max_length=100, verbose_name="Локация")
+    type = models.CharField(max_length=100, verbose_name="Тип локации", choices=TypeChooise.choices, default=TypeChooise.location)
+    description_location = models.TextField(max_length=100, verbose_name="Описание", blank=True, null=True)
+    time = models.CharField(max_length=100, verbose_name="Время поездки")
+    nextTransport = models.ForeignKey(NextTransport, on_delete=models.CASCADE, null=True)
+    
     tour_program = models.ForeignKey(TourProgram, related_name='locations', on_delete=models.CASCADE, blank=True,
                                      null=True)
     tour = models.ForeignKey(TourAdd, on_delete=models.CASCADE, verbose_name="Тур")
