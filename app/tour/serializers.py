@@ -53,16 +53,13 @@ class TourProgramSerializer(serializers.ModelSerializer):
 
 
 class TourProgramDaySerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='title')
+    day = serializers.IntegerField(source='how_day')
     class Meta:
         model = TourProgramDay
-        fields = '__all__'
+        depth = 2
+        fields = ['id', 'name', 'day', 'title']
 
-    def to_representation(self, instance):
-        return {
-            'id': instance.id,
-            'name': instance.title,
-            'day': instance.how_day,
-        }
 
 
 class PriceSerializer(serializers.ModelSerializer):
