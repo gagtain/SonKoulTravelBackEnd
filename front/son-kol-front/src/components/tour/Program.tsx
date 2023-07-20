@@ -44,8 +44,8 @@ const Program: React.FC = () => {
         break;
     }
   };
-
-  if (!data.program.length) return <></>;
+  console.log(data)
+  if (!data.program?.length) return <></>;
 
   return (
     <section className="pl-10 pb-20 bottom-line">

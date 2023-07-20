@@ -160,7 +160,6 @@ class TourProgramViewSet(viewsets.ModelViewSet):
                     list_1.append(n)
                     
             serializer = TourProgramDaySerializer(list_1, many=True)
-            print(list_1)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Exception as e:
