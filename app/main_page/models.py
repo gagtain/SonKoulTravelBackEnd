@@ -16,7 +16,7 @@ class OurTeam(models.Model):
     description = models.TextField(verbose_name="Описание", blank=True, null=True)
 
     def __str__(self):
-        return self.name, " ", self.position
+        return f"{self.name} {self.position}"
 
     class Meta:
         verbose_name = "Наша команда"
@@ -29,7 +29,7 @@ class QuestionList(models.Model):
     answer = models.CharField(verbose_name="Ответ", max_length=250)
 
     def __str__(self):
-        return self.question, " ", self.answer
+        return f"{self.question} {self.answer}"
 
     class Meta:
         verbose_name = "Вопрос"
