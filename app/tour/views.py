@@ -1,7 +1,5 @@
 import re
-from django.db.models import QuerySet
 import requests
-from django.db.migrations import serializer
 from django.http import HttpResponse
 from rest_framework import viewsets, status, permissions
 from rest_framework import viewsets, status, permissions, mixins, serializers
